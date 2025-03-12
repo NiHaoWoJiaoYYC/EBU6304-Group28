@@ -1,6 +1,6 @@
 /**
-	 * 大模型的对话接收，原来这个项目里的主函数还没抽象成公有函数
-	 * 缺少pom.xml的配置，接收不了json
+	 * 大模型的对话接收
+	 * 缺少pom.xml的配置
 	 * @author Yang Yuchen
 	 * @throws IOException
 	 */
@@ -21,11 +21,12 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
  
+
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 
-
+//用的时候直接写个对象DeepseekTestMain传输入str就行
 public class DeepseekTestMain {
  
 	private static final String DEEPSEEK_API_URL_COMPLETIONS = "https://api.deepseek.com/chat/completions"; // API地址 ——
@@ -33,17 +34,17 @@ public class DeepseekTestMain {
  
 	private static final String DEEPSEEK_API_KEY = "sk-2dbc2b2d9f6f4622bf242d6d82be6dc1"; // 官网申请的api key
  
- 
-	public static void main(String[] args) {
-		DeepseekTestMain test = new DeepseekTestMain();
+	
+
+	public String Chat(String input) throws IOException{
+	
 		try {
-			test.sendDeepseekChat(DEEPSEEK_API_URL_COMPLETIONS, "虚拟电厂与deepseek结合的方向说一下");
+			return sendDeepseekChat(DEEPSEEK_API_URL_COMPLETIONS, input);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			return "Deepseek Error!";
 		}
 	}
- 
+
 	/**
 	 * 对话补全
 	 * 
