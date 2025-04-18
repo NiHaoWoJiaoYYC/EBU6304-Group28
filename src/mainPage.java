@@ -15,7 +15,7 @@ public class mainPage {
 
         JPanel panel = new JPanel(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5, 20, 5, 20);
+        gbc.insets = new Insets(5, 21, 5, 20);
 
         // Set the label to align left
         gbc.anchor = GridBagConstraints.WEST;
