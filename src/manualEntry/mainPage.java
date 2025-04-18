@@ -1,9 +1,12 @@
 package manualEntry;
+
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
- * @version 1.0
+ * @version 2.0
  * @author Jing Wenrui
  * Function: Manually entry transaction information
  */
@@ -108,6 +111,27 @@ public class mainPage {
         gbc.gridy = 5;
         gbc.gridwidth = 2;
         panel.add(buttonPanel, gbc);
+        
+     // Save button event
+        saveButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String date = dateField.getText();
+                double amount = Double.parseDouble(amountField.getText());
+                String type = (String) typeComboBox.getSelectedItem();
+                String object = objectField.getText();
+                String remarks = remarkArea.getText();
+
+                transactionInformation transaction = new transactionInformation(date, amount, type, object, remarks);
+                transactionInformation.addTransaction(transaction);
+
+                JOptionPane.showMessageDialog(frame, "The transaction record is saved successfully！");
+                frame.dispose();
+
+                new displayPage();
+            }
+        });
+        
         
      // Set the window to be centered relative to the screen
         frame.setLocationRelativeTo(null);
