@@ -116,19 +116,24 @@ public class mainPage {
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String date = dateField.getText();
-                double amount = Double.parseDouble(amountField.getText());
-                String type = (String) typeComboBox.getSelectedItem();
-                String object = objectField.getText();
-                String remarks = remarkArea.getText();
+            	try {
+                    String date = dateField.getText();
+                    double amount = Double.parseDouble(amountField.getText());
+                    String type = (String) typeComboBox.getSelectedItem();
+                    String object = objectField.getText();
+                    String remarks = remarkArea.getText();
 
-                transactionInformation transaction = new transactionInformation(date, amount, type, object, remarks);
-                transactionInformation.addTransaction(transaction);
+                    transactionInformation transaction = new transactionInformation(date, amount, type, object, remarks);
+                    transactionInformation.addTransaction(transaction);
 
-                JOptionPane.showMessageDialog(frame, "The transaction record is saved successfully！");
-                frame.dispose();
-
-                new displayPage();
+                    int result = JOptionPane.showConfirmDialog(frame, "The transaction record is saved successfully！Do you want to view the saved information?", "Confirmation", JOptionPane.YES_NO_OPTION);
+                    if (result == JOptionPane.YES_OPTION) {
+                        frame.dispose();
+                        new displayPage();
+                    }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(frame, "Please enter a valid number for the transaction amount.", "Input Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         });
         
