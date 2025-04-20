@@ -3,7 +3,7 @@
 	 * 缺少pom.xml的配置
 	 * @author Yang Yuchen
 	 * @throws IOException
-	 */
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,7 +51,7 @@ public class DeepseekTestMain {
 	 * @param mess
 	 * @return
 	 * @throws IOException
-	 */
+
 	public String sendDeepseekChat(String deepseekUrl, String context) throws IOException {
 		String result = null;
  
@@ -190,3 +190,4 @@ public class DeepseekTestMain {
 	};
  
 }
+ */
