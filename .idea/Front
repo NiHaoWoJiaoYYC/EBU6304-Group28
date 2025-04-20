@@ -1,0 +1,298 @@
+package org.bupt.persosnalfinance.Front;
+
+import javafx.application.Application;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Slider;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
+
+public class BudgetApp extends Application {
+    private static final String API_URL = "http://localhost:8080/api/budget/check";
+
+    private String[] categories;
+    private double[] lastQuarterAvg;
+    private double[] thisQuarter;
+
+    private double threshold = 0.18; // 默认阈值 18%
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        primaryStage.setTitle("Budget Tracking App");
+
+        // 向后端请求数据
+        fetchDataFromBackend();
+
+        // 创建 X 轴和 Y 轴
+        CategoryAxis xAxis = new CategoryAxis();
+        xAxis.setCategories(javafx.collections.FXCollections.observableArrayList(categories));
+        NumberAxis yAxis = new NumberAxis();
+
+        // 创建柱状图
+        BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
+        XYChart.Series<String, Number> lastQuarterSeries = new XYChart.Series<>();
+        XYChart.Series<String, Number> thisQuarterSeries = new XYChart.Series<>();
+
+        // 填充数据到柱状图
+        if (lastQuarterAvg != null && thisQuarter != null) {
+            for (int i = 0; i < categories.length; i++) {
+                lastQuarterSeries.getData().add(new XYChart.Data<>(categories[i], lastQuarterAvg[i]));
+                thisQuarterSeries.getData().add(new XYChart.Data<>(categories[i], thisQuarter[i]));
+            }
+        }
+
+        barChart.getData().addAll(lastQuarterSeries, thisQuarterSeries);
+
+        // 创建表格显示支出数据
+        TableView<Spending> table = createSpendingTable();
+
+        // 创建一个滑动条，调整超支阈值
+        Slider thresholdSlider = new Slider(0, 1, threshold);
+        thresholdSlider.setShowTickLabels(true);
+        thresholdSlider.setBlockIncrement(0.01);
+        thresholdSlider.valueProperty().addListener(new ChangeListener<Number>() {
+            @Override
+            public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+                threshold = newValue.doubleValue();
+                updateOverspendingAlerts(table);
+            }
+        });
+
+        // 创建 VBox 布局，将所有组件放入其中
+        VBox vbox = new VBox(barChart, table, thresholdSlider);
+        Scene scene = new Scene(vbox, 800, 600);
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
+
+    private TableView<Spending> createSpendingTable() {
+        TableView<Spending> table = new TableView<>();
+
+        // 创建各个列
+        TableColumn<Spending, String> categoryColumn = new TableColumn<>("Category");
+        categoryColumn.setCellValueFactory(cellData -> cellData.getValue().categoryProperty());
+
+        TableColumn<Spending, Double> lastQuarterColumn = new TableColumn<>("Last Quarter Avg.");
+        lastQuarterColumn.setCellValueFactory(cellData -> cellData.getValue().lastQuarterAvgProperty().asObject());
+
+        TableColumn<Spending, Double> thisQuarterColumn = new TableColumn<>("This Quarter");
+        thisQuarterColumn.setCellValueFactory(cellData -> cellData.getValue().thisQuarterProperty().asObject());
+
+        TableColumn<Spending, String> statusColumn = new TableColumn<>("Status");
+        statusColumn.setCellValueFactory(cellData -> cellData.getValue().statusProperty());
+
+        table.getColumns().addAll(categoryColumn, lastQuarterColumn, thisQuarterColumn, statusColumn);
+
+        // 用数据填充表格
+        if (categories != null && lastQuarterAvg != null && thisQuarter != null) {
+            for (int i = 0; i < categories.length; i++) {
+                Spending spending = new Spending(categories[i], lastQuarterAvg[i], thisQuarter[i]);
+                table.getItems().add(spending);
+            }
+        }
+
+        return table;
+    }
+    private void updateOverspendingAlerts(TableView<Spending> table) {
+        // 创建请求对象，发送给后端
+        User user = new User();
+        user.setLastQuarterAvg(lastQuarterAvg);
+        user.setThisQuarter(thisQuarter);
+
+        // 通过 RestTemplate 向后端发送 POST 请求
+        RestTemplate restTemplate = new RestTemplate();
+        String url = API_URL + "?threshold=" + threshold;
+        ResponseEntity<BudgetResponse> response = restTemplate.postForEntity(url, user, BudgetResponse.class);
+
+        // 处理后端返回的警告信息
+        if (response.getStatusCode().is2xxSuccessful()) {
+            List<String> alerts = response.getBody().getAlerts();
+
+            // 更新表格中的每个分类状态
+            for (int i = 0; i < alerts.size(); i++) {
+                Spending spending = table.getItems().get(i);
+                String alert = alerts.get(i);
+                spending.setStatus(alert);
+
+                // 显示超支警告
+                if (alert.contains("超支")) {
+                    showAlert(spending.getCategory() + " 超支！");
+                }
+            }
+        }
+    }
+
+
+    private void showAlert(String message) {
+        Alert alert = new Alert(AlertType.WARNING);
+        alert.setTitle("Overspending Alert");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void fetchDataFromBackend() {
+        // 创建 RestTemplate 向后端获取数据
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://localhost:8080/api/budget/data";
+        ResponseEntity<BudgetDataResponse> response = restTemplate.getForEntity(url, BudgetDataResponse.class);
+
+        // 如果请求成功，填充数据
+        if (response.getStatusCode().is2xxSuccessful()) {
+            BudgetDataResponse data = response.getBody();
+            categories = data.getCategories();
+            lastQuarterAvg = data.getLastQuarterAvg();
+            thisQuarter = data.getThisQuarter();
+        }
+    }
+
+    // Spending 类
+    public static class Spending {
+        private StringProperty category;
+        private DoubleProperty lastQuarterAvg;
+        private DoubleProperty thisQuarter;
+        private StringProperty status;
+
+        public Spending(String category, double lastQuarterAvg, double thisQuarter) {
+            this.category = new SimpleStringProperty(category);
+            this.lastQuarterAvg = new SimpleDoubleProperty(lastQuarterAvg);
+            this.thisQuarter = new SimpleDoubleProperty(thisQuarter);
+            this.status = new SimpleStringProperty("Normal");
+        }
+
+        public StringProperty categoryProperty() {
+            return category;
+        }
+
+        public String getCategory() {
+            return category.get();
+        }
+
+        public void setCategory(String category) {
+            this.category.set(category);
+        }
+
+        public DoubleProperty lastQuarterAvgProperty() {
+            return lastQuarterAvg;
+        }
+
+        public double getLastQuarterAvg() {
+            return lastQuarterAvg.get();
+        }
+
+        public void setLastQuarterAvg(double lastQuarterAvg) {
+            this.lastQuarterAvg.set(lastQuarterAvg);
+        }
+
+        public DoubleProperty thisQuarterProperty() {
+            return thisQuarter;
+        }
+
+        public double getThisQuarter() {
+            return thisQuarter.get();
+        }
+
+        public void setThisQuarter(double thisQuarter) {
+            this.thisQuarter.set(thisQuarter);
+        }
+
+        public StringProperty statusProperty() {
+            return status;
+        }
+
+        public String getStatus() {
+            return status.get();
+        }
+
+        public void setStatus(String status) {
+            this.status.set(status);
+        }
+    }
+
+    // User 类
+    public static class User {
+        private double[] lastQuarterAvg;
+        private double[] thisQuarter;
+
+        public double[] getLastQuarterAvg() {
+            return lastQuarterAvg;
+        }
+
+        public void setLastQuarterAvg(double[] lastQuarterAvg) {
+            this.lastQuarterAvg = lastQuarterAvg;
+        }
+
+        public double[] getThisQuarter() {
+            return thisQuarter;
+        }
+
+        public void setThisQuarter(double[] thisQuarter) {
+            this.thisQuarter = thisQuarter;
+        }
+    }
+
+    // BudgetResponse 类
+    public static class BudgetResponse {
+        private List<String> alerts;
+
+        public List<String> getAlerts() {
+            return alerts;
+        }
+
+        public void setAlerts(List<String> alerts) {
+            this.alerts = alerts;
+        }
+    }
+
+    // BudgetDataResponse 类
+    public static class BudgetDataResponse {
+        private String[] categories;
+        private double[] lastQuarterAvg;
+        private double[] thisQuarter;
+
+        public String[] getCategories() {
+            return categories;
+        }
+
+        public void setCategories(String[] categories) {
+            this.categories = categories;
+        }
+
+        public double[] getLastQuarterAvg() {
+            return lastQuarterAvg;
+        }
+
+        public void setLastQuarterAvg(double[] lastQuarterAvg) {
+            this.lastQuarterAvg = lastQuarterAvg;
+        }
+
+        public double[] getThisQuarter() {
+            return thisQuarter;
+        }
+
+        public void setThisQuarter(double[] thisQuarter) {
+            this.thisQuarter = thisQuarter;
+        }
+    }
+}
