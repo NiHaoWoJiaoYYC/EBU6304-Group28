@@ -3,8 +3,18 @@ package aiBudgetPlanner;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
+import java.util.*;
+import aiBudgetPlanner.BudgetAIService;
 
 public class BudgetPlannerUI {
+
+    private JTextField occupationField;
+    private JTextField incomeField;
+    private JTextField cityField;
+    private JTextField elderlyField;
+    private JTextField childrenField;
+    private JTextField partnerField;
+    private JTextField petsField;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
@@ -48,10 +58,10 @@ public class BudgetPlannerUI {
         leftPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         leftPanel.setBackground(Color.WHITE);
 
-        leftPanel.add(createUserFormPanel(), BorderLayout.NORTH);
+        JPanel userFormPanel = createUserFormPanel();
+        leftPanel.add(userFormPanel, BorderLayout.NORTH);
         leftPanel.add(createChartPlaceholder(), BorderLayout.CENTER);
 
-        // 已删除左下 System Alert
         return leftPanel;
     }
 
@@ -60,11 +70,9 @@ public class BudgetPlannerUI {
         rightPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
         rightPanel.setBackground(Color.WHITE);
 
-        // 表格上方展示
         JScrollPane tableScrollPane = createBudgetTablePanel();
         rightPanel.add(tableScrollPane, BorderLayout.CENTER);
 
-        // 包裹按钮 + Alert
         JPanel wrapperPanel = new JPanel(new BorderLayout());
         wrapperPanel.setBackground(Color.WHITE);
         wrapperPanel.add(createButtonPanel(), BorderLayout.NORTH);
@@ -77,8 +85,8 @@ public class BudgetPlannerUI {
     private JPanel createUserFormPanel() {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createTitledBorder(
-            BorderFactory.createLineBorder(new Color(180, 180, 180)),
-            "AI Personalized Budget Planning"
+                BorderFactory.createLineBorder(new Color(180, 180, 180)),
+                "AI Personalized Budget Planning"
         ));
         panel.setBackground(new Color(248, 250, 252));
 
@@ -88,19 +96,67 @@ public class BudgetPlannerUI {
         gbc.gridx = 0;
         gbc.gridy = 0;
 
-        String[] labels = {
-            "Occupation:", "Disposable Income:", "City You Live In:",
-            "Family Situation:", "Number of Elderly:", "Number of Children:",
-            "Have a Partner?", "Have Pets?"
-        };
+        panel.add(new JLabel("Occupation:"), gbc); gbc.gridx = 1;
+        occupationField = new JTextField(14); panel.add(occupationField, gbc);
+        gbc.gridx = 0; gbc.gridy++;
 
-        for (String label : labels) {
-            panel.add(new JLabel(label), gbc);
-            gbc.gridx = 1;
-            panel.add(new JTextField(14), gbc);
-            gbc.gridx = 0;
-            gbc.gridy++;
-        }
+        panel.add(new JLabel("Disposable Income:"), gbc); gbc.gridx = 1;
+        incomeField = new JTextField(14); panel.add(incomeField, gbc);
+        gbc.gridx = 0; gbc.gridy++;
+
+        panel.add(new JLabel("City You Live In:"), gbc); gbc.gridx = 1;
+        cityField = new JTextField(14); panel.add(cityField, gbc);
+        gbc.gridx = 0; gbc.gridy++;
+
+        panel.add(new JLabel("Number of Elderly:"), gbc); gbc.gridx = 1;
+        elderlyField = new JTextField(14); panel.add(elderlyField, gbc);
+        gbc.gridx = 0; gbc.gridy++;
+
+        panel.add(new JLabel("Number of Children:"), gbc); gbc.gridx = 1;
+        childrenField = new JTextField(14); panel.add(childrenField, gbc);
+        gbc.gridx = 0; gbc.gridy++;
+
+        panel.add(new JLabel("Have a Partner?"), gbc); gbc.gridx = 1;
+        partnerField = new JTextField(14); panel.add(partnerField, gbc);
+        gbc.gridx = 0; gbc.gridy++;
+
+        panel.add(new JLabel("Have Pets?"), gbc); gbc.gridx = 1;
+        petsField = new JTextField(14); panel.add(petsField, gbc);
+        gbc.gridx = 0; gbc.gridy++;
+
+        JButton generateBtn = new JButton("Generate Budget");
+        generateBtn.setBackground(new Color(180, 220, 250));
+        generateBtn.setFocusPainted(false);
+        gbc.gridwidth = 2;
+        panel.add(generateBtn, gbc);
+
+        generateBtn.addActionListener(e -> {
+            try {
+                String occupation = occupationField.getText();
+                double income = Double.parseDouble(incomeField.getText());
+                String city = cityField.getText();
+                int elderly = Integer.parseInt(elderlyField.getText());
+                int children = Integer.parseInt(childrenField.getText());
+                boolean hasPartner = Boolean.parseBoolean(partnerField.getText());
+                boolean hasPets = Boolean.parseBoolean(petsField.getText());
+
+                UserInfo user = new UserInfo(
+                        occupation, income, city,
+                        elderly, children, hasPartner, hasPets
+                );
+
+                Map<String, Double> aiBudget = BudgetAIService.generateBudget(user);
+
+                StringBuilder sb = new StringBuilder("AI 预算生成成功：\n");
+                for (Map.Entry<String, Double> entry : aiBudget.entrySet()) {
+                    sb.append(entry.getKey()).append("：￥").append(entry.getValue()).append("\n");
+                }
+
+                JOptionPane.showMessageDialog(null, sb.toString(), "生成成功", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(null, "请输入正确的格式，例如收入必须是数字！", "输入错误", JOptionPane.ERROR_MESSAGE);
+            }
+        });
 
         return panel;
     }
@@ -127,21 +183,22 @@ public class BudgetPlannerUI {
     }
 
     private JScrollPane createBudgetTablePanel() {
-        String[] columns = {"Category", "Subcategory", "%", "¥"};
+        String[] columns = {"Category", "%", "¥"};
         Object[][] data = {
-                {"Food", "", "", ""},
-                {"Housing/Rent", "", "", ""},
-                {"Daily Necessities", "", "", ""},
-                {"Transportation", "", "", ""},
-                {"Entertainment", "", "", ""},
-                {"Shopping", "", "", ""},
-                {"Healthcare", "", "", ""},
-                {"Education", "", "", ""},
-                {"Childcare", "", "", ""},
-                {"Gifts", "", "", ""},
-                {"Savings", "", "", ""},
-                {"Others", "", "", ""}
+                {"Food", "", ""},
+                {"Housing/Rent", "", ""},
+                {"Daily Necessities", "", ""},
+                {"Transportation", "", ""},
+                {"Entertainment", "", ""},
+                {"Shopping", "", ""},
+                {"Healthcare", "", ""},
+                {"Education", "", ""},
+                {"Childcare", "", ""},
+                {"Gifts", "", ""},
+                {"Savings", "", ""},
+                {"Others", "", ""}
         };
+
 
         JTable table = new JTable(data, columns);
         table.setRowHeight(25);
