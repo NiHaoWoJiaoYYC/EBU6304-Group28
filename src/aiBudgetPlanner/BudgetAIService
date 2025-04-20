@@ -1,0 +1,111 @@
+package aiBudgetPlanner;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.*;
+import com.google.gson.*;
+
+public class BudgetAIService {
+    public static final String API_KEY = "sk-d82ebaab7f284198a4a743e416ac184f"; // 替换为你的真实 API Key
+    public static final String API_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation";
+
+    // 构造 Prompt 提示词
+    public static String buildPrompt(UserInfo user) {
+        return String.format("""
+                根据以下用户信息，为他们制定月度预算（单位：人民币元），包括以下12个类别：
+                Food、Housing/Rent、Daily Necessities、Transportation、Entertainment、
+                Shopping、Healthcare、Education、Childcare、Gifts、Savings、Others。
+
+                用户信息如下：
+                Occupation: %s
+                Disposable Income: %.2f
+                City: %s
+                Number of Elderly to Support: %d
+                Number of Children to Support: %d
+                Has Partner: %s
+                Has Pets: %s
+
+                请只返回 JSON 格式：
+                {
+                  "Food": 1000,
+                  "Housing/Rent": 2000,
+                  ...
+                }
+                """,
+                user.getOccupation(),
+                user.getDisposableIncome(),
+                user.getCity(),
+                user.getNumElderlyToSupport(),
+                user.getNumChildren(),
+                user.isHasPartner(),
+                user.isHasPets()
+        );
+    }
+
+    // 发送请求并解析预算结果
+    public static Map<String, Double> generateBudget(UserInfo user) {
+        Map<String, Double> result = new HashMap<>();
+        try {
+            URL url = new URL(API_URL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "application/json");
+            conn.setRequestProperty("Authorization", "Bearer " + API_KEY);
+
+            // 构造请求体
+            JsonObject root = new JsonObject();
+            root.addProperty("model", "qwen-turbo");
+
+            JsonObject input = new JsonObject();
+            input.addProperty("prompt", buildPrompt(user));
+            root.add("input", input);
+
+            root.addProperty("result_format", "text");
+
+            // 发送请求
+            OutputStream os = conn.getOutputStream();
+            os.write(root.toString().getBytes());
+            os.flush();
+            os.close();
+
+            // 读取响应
+            BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+            StringBuilder responseBuilder = new StringBuilder();
+            String line;
+            while ((line = br.readLine()) != null) {
+                responseBuilder.append(line);
+            }
+            br.close();
+
+            String response = responseBuilder.toString();
+
+            // 提取 content 字段
+            JsonObject responseJson = JsonParser.parseString(response).getAsJsonObject();
+            String content = responseJson
+                    .getAsJsonObject("output")
+                    .get("text")
+                    .getAsString();
+
+            // ✅ 提取纯 JSON 内容
+            int start = content.indexOf("{");
+            int end = content.lastIndexOf("}");
+            if (start != -1 && end != -1 && end > start) {
+                String jsonString = content.substring(start, end + 1);
+
+                JsonObject budgetJson = JsonParser.parseString(jsonString).getAsJsonObject();
+                for (Map.Entry<String, JsonElement> entry : budgetJson.entrySet()) {
+                    result.put(entry.getKey(), entry.getValue().getAsDouble());
+                }
+            } else {
+                System.out.println("⚠️ 未找到有效 JSON 内容，原始返回：\n" + content);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+}
