@@ -12,18 +12,19 @@ public class SpendingListGenerator {
     };
 
     /**
-     * 接收传入的 Map（实际消费），构建完整的 SpendingRecord 清单
+     * 接收两个 Map（实际消费 + AI预算），构建完整的 SpendingRecord 清单
      */
-    public static List<SpendingRecord> buildSpendingList(Map<String, Double> actualData) {
+    public static List<SpendingRecord> buildSpendingList(Map<String, Double> actualData, Map<String, Double> aiBudget) {
         List<SpendingRecord> list = new ArrayList<>();
         for (String category : categories) {
-            double value = actualData.getOrDefault(category, 0.0);
-            list.add(new SpendingRecord(category, value));
+            double actual = actualData.getOrDefault(category, 0.0);
+            double budget = aiBudget.getOrDefault(category, 0.0);
+            list.add(new SpendingRecord(category, actual, budget));
         }
         return list;
     }
 
-    // 可选：提供静态获取所有类别方法
+    // 提供静态获取所有类别方法
     public static String[] getDefaultCategories() {
         return categories;
     }
