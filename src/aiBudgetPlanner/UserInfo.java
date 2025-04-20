@@ -4,18 +4,16 @@ public class UserInfo {
     private String occupation;
     private double disposableIncome;
     private String city;
-    private String familySituation;
     private int numElderlyToSupport;
     private int numChildren;
     private boolean hasPartner;
     private boolean hasPets;
 
-    public UserInfo(String occupation, double disposableIncome, String city, String familySituation,
+    public UserInfo(String occupation, double disposableIncome, String city,
                     int numElderlyToSupport, int numChildren, boolean hasPartner, boolean hasPets) {
         this.occupation = occupation;
         this.disposableIncome = disposableIncome;
         this.city = city;
-        this.familySituation = familySituation;
         this.numElderlyToSupport = numElderlyToSupport;
         this.numChildren = numChildren;
         this.hasPartner = hasPartner;
@@ -32,10 +30,6 @@ public class UserInfo {
 
     public String getCity() {
         return city;
-    }
-
-    public String getFamilySituation() {
-        return familySituation;
     }
 
     public int getNumElderlyToSupport() {
@@ -60,7 +54,6 @@ public class UserInfo {
                 "occupation='" + occupation + '\'' +
                 ", disposableIncome=" + disposableIncome +
                 ", city='" + city + '\'' +
-                ", familySituation='" + familySituation + '\'' +
                 ", numElderlyToSupport=" + numElderlyToSupport +
                 ", numChildren=" + numChildren +
                 ", hasPartner=" + hasPartner +
