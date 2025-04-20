@@ -13,12 +13,16 @@ public class SpendingTablePanel extends JPanel {
     public SpendingTablePanel(List<SpendingRecord> spendingList) {
         setLayout(new BorderLayout());
 
-        String[] columnNames = {"Category", "Actual Spending (¥)"};
+        String[] columnNames = {"Category", "Actual Spending (¥)", "AI Budget (¥)"};
         model = new DefaultTableModel(columnNames, 0);
 
         // 添加记录到表格
         for (SpendingRecord record : spendingList) {
-            Object[] row = {record.getCategory(), record.getActualSpending()};
+            Object[] row = {
+                    record.getCategory(),
+                    record.getActualSpending(),
+                    record.getAiBudget()
+            };
             model.addRow(row);
         }
 
@@ -31,7 +35,11 @@ public class SpendingTablePanel extends JPanel {
     public void updateTable(List<SpendingRecord> newList) {
         model.setRowCount(0); // 清空旧数据
         for (SpendingRecord r : newList) {
-            model.addRow(new Object[]{r.getCategory(), r.getActualSpending()});
+            model.addRow(new Object[]{
+                    r.getCategory(),
+                    r.getActualSpending(),
+                    r.getAiBudget()
+            });
         }
     }
 }
