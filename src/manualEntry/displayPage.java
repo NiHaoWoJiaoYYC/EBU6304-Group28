@@ -1,16 +1,16 @@
-package manualEntry;
+//package manualEntry;
 
 import javax.swing.*;
 
 /**
- * @version 1.0
+ * @version 2.0
  * @author Jing Wenrui
- * Function: display the transaction information  
+ * Function: display the transaction information
  */
 
 public class displayPage {
 
-	public displayPage() {
+    public displayPage() {
         JFrame frame = new JFrame("Transaction information");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(600, 400);
@@ -27,16 +27,16 @@ public class displayPage {
             data[i][3] = transaction.getType();
             data[i][4] = transaction.getObject();
             data[i][5] = transaction.getRemarks();
-	    }
-        
+        }
+
         table = new JTable(data, columnNames);
         JScrollPane scrollPane = new JScrollPane(table);
         frame.add(scrollPane);
 
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
-	}
-    
+    }
+
     public static void main(String[] args) {
         new displayPage();
     }
