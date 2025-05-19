@@ -86,7 +86,7 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.6</version>
                 <configuration>
-                    <mainClass>org.bupt.persosnalfinance.Front.BudgetApp</mainClass> <!-- JavaFX 主类 -->
+                    <mainClass>org.bupt.persosnalfinance.Front.AlertFront.BudgetApp</mainClass> <!-- JavaFX 主类 -->
                 </configuration>
                 <executions>
                     <execution>

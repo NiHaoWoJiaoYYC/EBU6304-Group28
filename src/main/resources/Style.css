@@ -1,0 +1,49 @@
+/* src/main/resources/style.css */
+
+/* 根 Pane 白底 */
+.root-pane {
+    -fx-background-color: white;
+}
+
+/* TopPane 占据页面上半部 */
+.top-pane {
+    -fx-pref-height: 350;
+}
+
+/* 本期 series0 红色，series1 蓝色 */
+.default-color0.chart-bar {
+    -fx-bar-fill: #EF5350;
+}
+.default-color1.chart-bar {
+    -fx-bar-fill: #1565C0;
+}
+
+/* 表格：白底，选中行浅蓝 */
+.spending-table {
+    -fx-background-color: white;
+}
+.spending-table .table-row-cell:filled:selected {
+    -fx-background-color: #BBDEFB;
+}
+
+/* 警告标题加粗 */
+.alert-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+
+/* 单条警告：红字 + 红框 */
+.alert-item {
+    -fx-text-fill: red;
+    -fx-border-color: red;
+    -fx-border-radius: 4;
+    -fx-padding: 6;
+}
+
+/* Status 列：Normal 绿色，Overspending 红色 */
+.status-normal {
+    -fx-text-fill: green;
+}
+.status-overspending {
+    -fx-text-fill: red;
+}
