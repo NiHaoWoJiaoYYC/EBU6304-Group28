@@ -21,6 +21,27 @@ public class TransactionInformation {
         this.remarks = remarks;
     }
 
+    public void setDate(String date) {
+        this.date = date;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setObject(String object) {
+        this.object = object;
+    }
+
+    public void setRemarks(String remarks) {
+        this.remarks = remarks;
+    }
+
+
     public String getDate() { return date; }
     public double getAmount() { return amount; }
     public String getType() { return type; }

@@ -5,5 +5,19 @@
     "type": "expenditure:Food",
     "object": "enter...",
     "remarks": "Add Remark..."
+  },
+  {
+    "date": "4/13/2025",
+    "amount": 150.0,
+    "type": "expenditure:Shopping",
+    "object": "emporium",
+    "remarks": "Add Remark..."
+  },
+  {
+    "date": "2/14/2025",
+    "amount": 99.0,
+    "type": "expenditure:Treatment",
+    "object": "flower shop",
+    "remarks": "Add Remark..."
   }
 ]

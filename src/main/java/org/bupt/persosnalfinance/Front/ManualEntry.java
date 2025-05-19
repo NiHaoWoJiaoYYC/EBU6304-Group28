@@ -12,7 +12,7 @@ public class ManualEntry {
     public static void main(String[] args) {
         TransactionInformation.loadFromJSON("transactionInformation.json");
 
-        JFrame frame = new JFrame("Transaction information");
+        JFrame frame = new JFrame("Transaction information > Manual Entry");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(450, 400);
 
@@ -21,7 +21,7 @@ public class ManualEntry {
         gbc.insets = new Insets(5, 20, 5, 20);
         gbc.anchor = GridBagConstraints.WEST;
 
-        JLabel transactionDate = new JLabel("Transaction date (MM/dd/yyyy) :");
+        JLabel transactionDate = new JLabel("Transaction date:");
         gbc.gridx = 0;
         gbc.gridy = 0;
         panel.add(transactionDate, gbc);
@@ -82,8 +82,10 @@ public class ManualEntry {
         JPanel buttonPanel = new JPanel();
         JButton cancelButton = new JButton("cancel");
         JButton saveButton = new JButton("save");
+        JButton viewButton = new JButton("View Existing Transactions");
         buttonPanel.add(cancelButton);
         buttonPanel.add(saveButton);
+        buttonPanel.add(viewButton);
 
         gbc.gridx = 0;
         gbc.gridy = 5;
@@ -127,6 +129,7 @@ public class ManualEntry {
                 JOptionPane.showMessageDialog(frame, "Invalid amount. Please enter a non-negative number.", "Amount Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+        viewButton.addActionListener(e -> new DisplayTransactionInformation());
 
         frame.setLocationRelativeTo(null);
         frame.add(panel);
