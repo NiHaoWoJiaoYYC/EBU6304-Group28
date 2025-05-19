@@ -49,7 +49,7 @@ public class DisplayTransactionInformation {
         tableModel.setRowCount(0);
         List<TransactionInformation> transactions = TransactionInformation.transactionList;
 
-        // 按日期倒序排序
+        // Sort the transaction information in chronological order.
         transactions.sort((t1, t2) -> {
             try {
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
