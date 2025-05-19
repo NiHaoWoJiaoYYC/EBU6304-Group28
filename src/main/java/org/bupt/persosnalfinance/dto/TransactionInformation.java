@@ -70,7 +70,7 @@ public class TransactionInformation {
             List<TransactionInformation> loaded = new Gson().fromJson(reader, listType);
             if (loaded != null) transactionList.addAll(loaded);
         } catch (IOException e) {
-            // 文件不存在可忽略
+            //If the file does not exist, it can be ignored.
         }
     }
 }

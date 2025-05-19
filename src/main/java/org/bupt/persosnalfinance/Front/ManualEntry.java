@@ -94,13 +94,13 @@ public class ManualEntry {
 
         saveButton.addActionListener(e -> {
             try {
-                // 日期验证
+                // date validation
                 String date = dateField.getText().trim();
                 SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
                 sdf.setLenient(false);
                 sdf.parse(date); // 不合法将抛异常
 
-                // 金额验证
+                // amount validation
                 double amount = Double.parseDouble(amountField.getText().trim());
                 if (amount < 0) {
                     throw new NumberFormatException("Amount must be non-negative.");
