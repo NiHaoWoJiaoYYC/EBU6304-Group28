@@ -48,11 +48,23 @@ public class DisplayTransactionInformation {
     private void refreshTable() {
         tableModel.setRowCount(0);
         List<TransactionInformation> transactions = TransactionInformation.transactionList;
+
+        // 按日期倒序排序
+        transactions.sort((t1, t2) -> {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                return sdf.parse(t2.getDate()).compareTo(sdf.parse(t1.getDate())); // Sort by date in chronological order.
+            } catch (Exception e) {
+                return 0;
+            }
+        });
+
         for (int i = 0; i < transactions.size(); i++) {
             TransactionInformation t = transactions.get(i);
             tableModel.addRow(new Object[]{i + 1, t.getDate(), t.getAmount(), t.getType(), t.getObject(), t.getRemarks()});
         }
     }
+
 
     private void editSelectedTransaction() {
         int selectedRow = table.getSelectedRow();
