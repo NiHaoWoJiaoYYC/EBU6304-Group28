@@ -1,301 +1,98 @@
 [
   {
-    "date": "2024/1/2",
-    "amount": 213.0,
-    "type": "Food",
-    "object": "grocery",
+    "date": "2025/5/14",
+    "amount": 100.0,
+    "type": "expenditure:Shopping",
+    "object": "Clothing store",
     "remarks": "WX"
   },
   {
-    "date": "2024/1/3",
-    "amount": 2313.0,
-    "type": "Housing/Rent",
-    "object": "LianJia",
-    "remarks": "Alipay"
-  },
-  {
-    "date": "2024/1/4",
-    "amount": 67.0,
-    "type": "Daily Necessities",
+    "date": "2024/2/18",
+    "amount": 99.0,
+    "type": "Shopping",
     "object": "Supermarket",
     "remarks": "WX"
   },
   {
-    "date": "2024/1/5",
-    "amount": 87.0,
+    "date": "2024/2/18",
+    "amount": 99.0,
     "type": "Shopping",
-    "object": "Mall001",
-    "remarks": "WX"
-  },
-  {
-    "date": "2024/1/6",
-    "amount": 55.0,
-    "type": "Childcare",
-    "object": "XDF",
-    "remarks": "WX"
-  },
-  {
-    "date": "2024/1/7",
-    "amount": 44.0,
-    "type": "Transportation",
-    "object": "BJ Subway",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/1/8",
-    "amount": 65.0,
-    "type": "Daily Necessities",
     "object": "Supermarket",
     "remarks": "WX"
   },
   {
-    "date": "2024/1/9",
-    "amount": 33.0,
-    "type": "Savings",
-    "object": "Bank",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/1/10",
-    "amount": 66.0,
-    "type": "Gifts",
-    "object": "TaoBao",
-    "remarks": "Alipay"
-  },
-  {
-    "date": "2024/1/11",
-    "amount": 77.0,
-    "type": "Daily Necessities",
-    "object": "JingDong",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/1/12",
-    "amount": 88.0,
-    "type": "Transportation",
-    "object": "DIDI",
-    "remarks": "WX"
-  },
-  {
-    "date": "2024/1/13",
-    "amount": 33.0,
-    "type": "Daily Necessities",
-    "object": "TaoBao",
-    "remarks": "WX"
-  },
-  {
-    "date": "2024/1/14",
-    "amount": 11.0,
+    "date": "2024/2/18",
+    "amount": 99.0,
     "type": "Shopping",
-    "object": "TaoBao",
-    "remarks": "Alipay"
-  },
-  {
-    "date": "2024/1/15",
-    "amount": 34.0,
-    "type": "Daily Necessities",
-    "object": "JingDong",
+    "object": "Supermarket",
     "remarks": "WX"
   },
   {
-    "date": "2024/1/16",
-    "amount": 22.0,
-    "type": "Transportation",
-    "object": "DIDI",
-    "remarks": "WX"
-  },
-  {
-    "date": "2024/1/17",
+    "date": "2024/2/17",
     "amount": 23550.0,
     "type": "Income",
-    "object": " Company",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/1/18",
-    "amount": 1000.0,
-    "type": "Childcare",
-    "object": " XDF",
-    "remarks": "Alipay"
-  },
-  {
-    "date": "2024/1/19",
-    "amount": 224.0,
-    "type": "Daily Necessities",
-    "object": "grocery",
+    "object": "Company",
     "remarks": "WX"
   },
   {
-    "date": "2024/1/20",
-    "amount": 22.0,
-    "type": "Transportation",
-    "object": "BJ Subway",
+    "date": "2024/2/17",
+    "amount": 23550.0,
+    "type": "Income",
+    "object": "Company",
     "remarks": "WX"
   },
   {
-    "date": "2024/1/21",
-    "amount": 113.0,
-    "type": "Daily Necessities",
-    "object": "TaoBao",
+    "date": "2024/2/17",
+    "amount": 23550.0,
+    "type": "Income",
+    "object": "Company",
     "remarks": "WX"
   },
   {
-    "date": "2024/1/22",
-    "amount": 3134.0,
-    "type": "Shopping",
-    "object": "TaoBao",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/1/23",
-    "amount": 123.0,
-    "type": "Gifts",
-    "object": "TaoBao",
-    "remarks": "Alipay"
-  },
-  {
-    "date": "2024/1/24",
-    "amount": 1334.0,
-    "type": "Daily Necessities",
-    "object": "TaoBao",
-    "remarks": "WX"
-  },
-  {
-    "date": "2024/1/25",
-    "amount": 13.0,
-    "type": "Childcare",
-    "object": "XDF",
-    "remarks": "Alipay"
-  },
-  {
-    "date": "2024/1/26",
-    "amount": 223.0,
-    "type": "Daily Necessities",
-    "object": "grocery",
-    "remarks": "Alipay"
-  },
-  {
-    "date": "2024/1/27",
-    "amount": 42.0,
-    "type": "Savings",
-    "object": "Bank",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/1/28",
-    "amount": 131.0,
-    "type": "Transportation",
-    "object": "DIDI",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/1/29",
-    "amount": 443.0,
-    "type": "Daily Necessities",
-    "object": "Jingdong",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/1/30",
-    "amount": 4.0,
-    "type": "Daily Necessities",
-    "object": "Jingdong",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/1/31",
-    "amount": 23.0,
-    "type": "Childcare",
-    "object": "XDf",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/2/1",
-    "amount": 34.0,
+    "date": "2024/2/16",
+    "amount": 89.0,
     "type": "Daily Necessities",
     "object": "TaoBao",
     "remarks": "CC"
   },
   {
-    "date": "2024/2/2",
-    "amount": 110.0,
-    "type": "Savings",
-    "object": "Bank",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/2/3",
-    "amount": 5.0,
-    "type": "Transportation",
-    "object": "DIDI",
-    "remarks": "WX"
-  },
-  {
-    "date": "2024/2/4",
-    "amount": 400.0,
-    "type": "Shopping",
+    "date": "2024/2/16",
+    "amount": 89.0,
+    "type": "Daily Necessities",
     "object": "TaoBao",
-    "remarks": "WX"
-  },
-  {
-    "date": "2024/2/5",
-    "amount": 3000.0,
-    "type": "Gifts",
-    "object": "Mall001",
     "remarks": "CC"
   },
   {
-    "date": "2024/2/6",
-    "amount": 323.0,
+    "date": "2024/2/16",
+    "amount": 89.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/15",
+    "amount": 67.0,
     "type": "Shopping",
     "object": "Mall001",
     "remarks": "CC"
   },
   {
-    "date": "2024/2/7",
-    "amount": 50.0,
-    "type": "Transportation",
-    "object": "DIDI",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/2/8",
-    "amount": 34.0,
-    "type": "Daily Necessities",
-    "object": "Supermarket",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/2/9",
-    "amount": 990.0,
-    "type": "Childcare",
-    "object": "XDF",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/2/10",
-    "amount": 34.0,
-    "type": "Shopping",
-    "object": "TaoBao",
-    "remarks": "CC"
-  },
-  {
-    "date": "2024/2/11",
-    "amount": 35.0,
-    "type": "Transportation",
-    "object": "DIDI",
-    "remarks": "WX"
-  },
-  {
-    "date": "2024/2/12",
-    "amount": 345.0,
+    "date": "2024/2/15",
+    "amount": 67.0,
     "type": "Shopping",
     "object": "Mall001",
     "remarks": "CC"
   },
   {
-    "date": "2024/2/13",
-    "amount": 24.0,
+    "date": "2024/2/15",
+    "amount": 67.0,
+    "type": "Shopping",
+    "object": "Mall001",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/14",
+    "amount": 244.0,
     "type": "Daily Necessities",
     "object": "JingDong",
     "remarks": "CC"
@@ -308,31 +105,920 @@
     "remarks": "CC"
   },
   {
-    "date": "2024/2/15",
-    "amount": 67.0,
+    "date": "2024/2/14",
+    "amount": 244.0,
+    "type": "Daily Necessities",
+    "object": "JingDong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/13",
+    "amount": 24.0,
+    "type": "Daily Necessities",
+    "object": "JingDong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/13",
+    "amount": 24.0,
+    "type": "Daily Necessities",
+    "object": "JingDong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/13",
+    "amount": 24.0,
+    "type": "Daily Necessities",
+    "object": "JingDong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/12",
+    "amount": 345.0,
     "type": "Shopping",
     "object": "Mall001",
     "remarks": "CC"
   },
   {
-    "date": "2024/2/16",
-    "amount": 89.0,
+    "date": "2024/2/12",
+    "amount": 345.0,
+    "type": "Shopping",
+    "object": "Mall001",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/12",
+    "amount": 345.0,
+    "type": "Shopping",
+    "object": "Mall001",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/11",
+    "amount": 35.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/2/11",
+    "amount": 35.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/2/11",
+    "amount": 35.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/2/10",
+    "amount": 34.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/10",
+    "amount": 34.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/10",
+    "amount": 34.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/9",
+    "amount": 990.0,
+    "type": "Childcare",
+    "object": "XDF",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/9",
+    "amount": 990.0,
+    "type": "Childcare",
+    "object": "XDF",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/9",
+    "amount": 990.0,
+    "type": "Childcare",
+    "object": "XDF",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/8",
+    "amount": 34.0,
+    "type": "Daily Necessities",
+    "object": "Supermarket",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/8",
+    "amount": 34.0,
+    "type": "Daily Necessities",
+    "object": "Supermarket",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/8",
+    "amount": 34.0,
+    "type": "Daily Necessities",
+    "object": "Supermarket",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/7",
+    "amount": 50.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/7",
+    "amount": 50.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/7",
+    "amount": 50.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/6",
+    "amount": 323.0,
+    "type": "Shopping",
+    "object": "Mall001",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/6",
+    "amount": 323.0,
+    "type": "Shopping",
+    "object": "Mall001",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/6",
+    "amount": 323.0,
+    "type": "Shopping",
+    "object": "Mall001",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/5",
+    "amount": 3000.0,
+    "type": "Gifts",
+    "object": "Mall001",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/5",
+    "amount": 3000.0,
+    "type": "Gifts",
+    "object": "Mall001",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/5",
+    "amount": 3000.0,
+    "type": "Gifts",
+    "object": "Mall001",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/4",
+    "amount": 400.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/2/4",
+    "amount": 400.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/2/4",
+    "amount": 400.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/2/3",
+    "amount": 5.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/2/3",
+    "amount": 5.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/2/3",
+    "amount": 5.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/2/2",
+    "amount": 110.0,
+    "type": "Savings",
+    "object": "Bank",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/2",
+    "amount": 110.0,
+    "type": "Savings",
+    "object": "Bank",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/2",
+    "amount": 110.0,
+    "type": "Savings",
+    "object": "Bank",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/1",
+    "amount": 34.0,
     "type": "Daily Necessities",
     "object": "TaoBao",
     "remarks": "CC"
   },
   {
-    "date": "2024/2/17",
-    "amount": 23550.0,
-    "type": "Income",
-    "object": "Company",
+    "date": "2024/2/1",
+    "amount": 34.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/2/1",
+    "amount": 34.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/31",
+    "amount": 23.0,
+    "type": "Childcare",
+    "object": "XDf",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/31",
+    "amount": 23.0,
+    "type": "Childcare",
+    "object": "XDf",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/31",
+    "amount": 23.0,
+    "type": "Childcare",
+    "object": "XDf",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/30",
+    "amount": 4.0,
+    "type": "Daily Necessities",
+    "object": "Jingdong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/30",
+    "amount": 4.0,
+    "type": "Daily Necessities",
+    "object": "Jingdong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/30",
+    "amount": 4.0,
+    "type": "Daily Necessities",
+    "object": "Jingdong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/29",
+    "amount": 443.0,
+    "type": "Daily Necessities",
+    "object": "Jingdong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/29",
+    "amount": 443.0,
+    "type": "Daily Necessities",
+    "object": "Jingdong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/29",
+    "amount": 443.0,
+    "type": "Daily Necessities",
+    "object": "Jingdong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/28",
+    "amount": 131.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/28",
+    "amount": 131.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/28",
+    "amount": 131.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/27",
+    "amount": 42.0,
+    "type": "Savings",
+    "object": "Bank",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/27",
+    "amount": 42.0,
+    "type": "Savings",
+    "object": "Bank",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/27",
+    "amount": 42.0,
+    "type": "Savings",
+    "object": "Bank",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/26",
+    "amount": 223.0,
+    "type": "Daily Necessities",
+    "object": "grocery",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/26",
+    "amount": 223.0,
+    "type": "Daily Necessities",
+    "object": "grocery",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/26",
+    "amount": 223.0,
+    "type": "Daily Necessities",
+    "object": "grocery",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/25",
+    "amount": 13.0,
+    "type": "Childcare",
+    "object": "XDF",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/25",
+    "amount": 13.0,
+    "type": "Childcare",
+    "object": "XDF",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/25",
+    "amount": 13.0,
+    "type": "Childcare",
+    "object": "XDF",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/24",
+    "amount": 1334.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
     "remarks": "WX"
   },
   {
-    "date": "2024/2/18",
-    "amount": 99.0,
+    "date": "2024/1/24",
+    "amount": 1334.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/24",
+    "amount": 1334.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/23",
+    "amount": 123.0,
+    "type": "Gifts",
+    "object": "TaoBao",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/23",
+    "amount": 123.0,
+    "type": "Gifts",
+    "object": "TaoBao",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/23",
+    "amount": 123.0,
+    "type": "Gifts",
+    "object": "TaoBao",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/22",
+    "amount": 3134.0,
     "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/22",
+    "amount": 3134.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/22",
+    "amount": 3134.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/21",
+    "amount": 113.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/21",
+    "amount": 113.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/21",
+    "amount": 113.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/20",
+    "amount": 22.0,
+    "type": "Transportation",
+    "object": "BJ Subway",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/20",
+    "amount": 22.0,
+    "type": "Transportation",
+    "object": "BJ Subway",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/20",
+    "amount": 22.0,
+    "type": "Transportation",
+    "object": "BJ Subway",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/19",
+    "amount": 224.0,
+    "type": "Daily Necessities",
+    "object": "grocery",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/19",
+    "amount": 224.0,
+    "type": "Daily Necessities",
+    "object": "grocery",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/19",
+    "amount": 224.0,
+    "type": "Daily Necessities",
+    "object": "grocery",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/18",
+    "amount": 1000.0,
+    "type": "Childcare",
+    "object": " XDF",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/18",
+    "amount": 1000.0,
+    "type": "Childcare",
+    "object": " XDF",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/18",
+    "amount": 1000.0,
+    "type": "Childcare",
+    "object": " XDF",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/17",
+    "amount": 23550.0,
+    "type": "Income",
+    "object": " Company",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/17",
+    "amount": 23550.0,
+    "type": "Income",
+    "object": " Company",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/17",
+    "amount": 23550.0,
+    "type": "Income",
+    "object": " Company",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/16",
+    "amount": 22.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/16",
+    "amount": 22.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/16",
+    "amount": 22.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/15",
+    "amount": 34.0,
+    "type": "Daily Necessities",
+    "object": "JingDong",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/15",
+    "amount": 34.0,
+    "type": "Daily Necessities",
+    "object": "JingDong",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/15",
+    "amount": 34.0,
+    "type": "Daily Necessities",
+    "object": "JingDong",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/14",
+    "amount": 11.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/14",
+    "amount": 11.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/14",
+    "amount": 11.0,
+    "type": "Shopping",
+    "object": "TaoBao",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/13",
+    "amount": 33.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/13",
+    "amount": 33.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/13",
+    "amount": 33.0,
+    "type": "Daily Necessities",
+    "object": "TaoBao",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/12",
+    "amount": 88.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/12",
+    "amount": 88.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/12",
+    "amount": 88.0,
+    "type": "Transportation",
+    "object": "DIDI",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/11",
+    "amount": 77.0,
+    "type": "Daily Necessities",
+    "object": "JingDong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/11",
+    "amount": 77.0,
+    "type": "Daily Necessities",
+    "object": "JingDong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/11",
+    "amount": 77.0,
+    "type": "Daily Necessities",
+    "object": "JingDong",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/10",
+    "amount": 66.0,
+    "type": "Gifts",
+    "object": "TaoBao",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/10",
+    "amount": 66.0,
+    "type": "Gifts",
+    "object": "TaoBao",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/10",
+    "amount": 66.0,
+    "type": "Gifts",
+    "object": "TaoBao",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/9",
+    "amount": 33.0,
+    "type": "Savings",
+    "object": "Bank",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/9",
+    "amount": 33.0,
+    "type": "Savings",
+    "object": "Bank",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/9",
+    "amount": 33.0,
+    "type": "Savings",
+    "object": "Bank",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/8",
+    "amount": 65.0,
+    "type": "Daily Necessities",
     "object": "Supermarket",
     "remarks": "WX"
+  },
+  {
+    "date": "2024/1/8",
+    "amount": 65.0,
+    "type": "Daily Necessities",
+    "object": "Supermarket",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/8",
+    "amount": 65.0,
+    "type": "Daily Necessities",
+    "object": "Supermarket",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/7",
+    "amount": 44.0,
+    "type": "Transportation",
+    "object": "BJ Subway",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/7",
+    "amount": 44.0,
+    "type": "Transportation",
+    "object": "BJ Subway",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/7",
+    "amount": 44.0,
+    "type": "Transportation",
+    "object": "BJ Subway",
+    "remarks": "CC"
+  },
+  {
+    "date": "2024/1/6",
+    "amount": 55.0,
+    "type": "Childcare",
+    "object": "XDF",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/6",
+    "amount": 55.0,
+    "type": "Childcare",
+    "object": "XDF",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/6",
+    "amount": 55.0,
+    "type": "Childcare",
+    "object": "XDF",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/5",
+    "amount": 87.0,
+    "type": "Shopping",
+    "object": "Mall001",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/5",
+    "amount": 87.0,
+    "type": "Shopping",
+    "object": "Mall001",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/5",
+    "amount": 87.0,
+    "type": "Shopping",
+    "object": "Mall001",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/4",
+    "amount": 67.0,
+    "type": "Daily Necessities",
+    "object": "Supermarket",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/4",
+    "amount": 67.0,
+    "type": "Daily Necessities",
+    "object": "Supermarket",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/4",
+    "amount": 67.0,
+    "type": "Daily Necessities",
+    "object": "Supermarket",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/3",
+    "amount": 2313.0,
+    "type": "Housing/Rent",
+    "object": "LianJia",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/3",
+    "amount": 2313.0,
+    "type": "Housing/Rent",
+    "object": "LianJia",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/3",
+    "amount": 2313.0,
+    "type": "Housing/Rent",
+    "object": "LianJia",
+    "remarks": "Alipay"
+  },
+  {
+    "date": "2024/1/2",
+    "amount": 213.0,
+    "type": "Food",
+    "object": "grocery",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/2",
+    "amount": 213.0,
+    "type": "Food",
+    "object": "grocery",
+    "remarks": "WX"
+  },
+  {
+    "date": "2024/1/2",
+    "amount": 213.0,
+    "type": "Food",
+    "object": "grocery",
+    "remarks": "WX"
+  },
+  {
+    "date": "5/14/2025",
+    "amount": 100.0,
+    "type": "expenditure:Shopping",
+    "object": "Clothing store",
+    "remarks": "Add Remark..."
   }
 ]
