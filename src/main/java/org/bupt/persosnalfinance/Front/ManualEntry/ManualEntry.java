@@ -1,8 +1,7 @@
-package org.bupt.persosnalfinance.Front;
+package org.bupt.persosnalfinance.Front.ManualEntry;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
@@ -26,7 +25,7 @@ public class ManualEntry {
         gbc.gridy = 0;
         panel.add(transactionDate, gbc);
 
-        JTextField dateField = new JTextField("MM/dd/yyyy", 15);
+        JTextField dateField = new JTextField("yyyy/MM/dd", 15);
         gbc.gridx = 1;
         gbc.gridy = 0;
         gbc.fill = GridBagConstraints.HORIZONTAL;
@@ -96,7 +95,7 @@ public class ManualEntry {
             try {
                 // date validation
                 String date = dateField.getText().trim();
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                 sdf.setLenient(false);
                 sdf.parse(date); // 不合法将抛异常
 
@@ -124,11 +123,12 @@ public class ManualEntry {
                 }
 
             } catch (ParseException ex) {
-                JOptionPane.showMessageDialog(frame, "Invalid date format. Please use MM/dd/yyyy.", "Date Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "Invalid date format. Please use yyyy/MM/dd.", "Date Error", JOptionPane.ERROR_MESSAGE);
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(frame, "Invalid amount. Please enter a non-negative number.", "Amount Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+        cancelButton.addActionListener(e -> frame.dispose());
         viewButton.addActionListener(e -> new DisplayTransactionInformation());
 
         frame.setLocationRelativeTo(null);

@@ -1,9 +1,8 @@
-package org.bupt.persosnalfinance.Front;
+package org.bupt.persosnalfinance.Front.ManualEntry;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -30,13 +29,20 @@ public class DisplayTransactionInformation {
 
         JButton editButton = new JButton("Edit");
         JButton deleteButton = new JButton("Delete");
+        JButton backButton = new JButton("Back");
 
         editButton.addActionListener(e -> editSelectedTransaction());
         deleteButton.addActionListener(e -> deleteSelectedTransaction());
+        backButton.addActionListener(e -> {
+            frame.dispose();
+            new ManualEntry();
+        });
+
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(editButton);
         buttonPanel.add(deleteButton);
+        buttonPanel.add(backButton);
 
         frame.getContentPane().add(scrollPane, BorderLayout.CENTER);
         frame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
@@ -52,7 +58,7 @@ public class DisplayTransactionInformation {
         // Sort the transaction information in chronological order.
         transactions.sort((t1, t2) -> {
             try {
-                SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                 return sdf.parse(t2.getDate()).compareTo(sdf.parse(t1.getDate())); // Sort by date in chronological order.
             } catch (Exception e) {
                 return 0;
@@ -89,7 +95,7 @@ public class DisplayTransactionInformation {
         JTextField remarksField = new JTextField(t.getRemarks());
 
         JPanel panel = new JPanel(new GridLayout(0, 1));
-        panel.add(new JLabel("Date (MM/dd/yyyy):"));
+        panel.add(new JLabel("Date (yyyy/MM/dd):"));
         panel.add(dateField);
         panel.add(new JLabel("Amount:"));
         panel.add(amountField);
@@ -110,7 +116,7 @@ public class DisplayTransactionInformation {
                 String remarks = remarksField.getText().trim();
 
                 if (!isValidDate(date)) {
-                    throw new IllegalArgumentException("Invalid date format. Use MM/dd/yyyy.");
+                    throw new IllegalArgumentException("Invalid date format. Use yyyy/MM/dd.");
                 }
                 if (amount < 0) {
                     throw new IllegalArgumentException("Amount must be non-negative.");
@@ -148,7 +154,7 @@ public class DisplayTransactionInformation {
     }
 
     private boolean isValidDate(String date) {
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         sdf.setLenient(false);
         try {
             sdf.parse(date);
