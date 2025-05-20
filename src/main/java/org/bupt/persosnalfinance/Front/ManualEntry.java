@@ -10,7 +10,7 @@ import org.bupt.persosnalfinance.dto.TransactionInformation;
 
 public class ManualEntry {
     public static void main(String[] args) {
-        TransactionInformation.loadFromJSON("transactionInformation.json");
+        TransactionInformation.loadFromJSON("src/main/data/transactionInformation.json");
 
         JFrame frame = new JFrame("Transaction information > Manual Entry");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -114,7 +114,7 @@ public class ManualEntry {
                 if (result == JOptionPane.YES_OPTION) {
                     TransactionInformation transaction = new TransactionInformation(date, amount, type, object, remarks);
                     TransactionInformation.addTransaction(transaction);
-                    TransactionInformation.saveToJSON("transactionInformation.json");
+                    TransactionInformation.saveToJSON("src/main/data/transactionInformation.json");
 
                     int viewResult = JOptionPane.showConfirmDialog(frame, "Saved successfully! View data?", "View", JOptionPane.YES_NO_OPTION);
                     if (viewResult == JOptionPane.YES_OPTION) {

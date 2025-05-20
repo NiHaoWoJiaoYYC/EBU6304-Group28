@@ -15,7 +15,7 @@ public class DisplayTransactionInformation {
     private DefaultTableModel tableModel;
 
     public DisplayTransactionInformation() {
-        TransactionInformation.loadFromJSON("transactionInformation.json");
+        TransactionInformation.loadFromJSON("src/main/data/transactionInformation.json");
 
         frame = new JFrame("Transaction Information");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -122,7 +122,7 @@ public class DisplayTransactionInformation {
                 t.setObject(object);
                 t.setRemarks(remarks);
 
-                TransactionInformation.saveToJSON("transactionInformation.json");
+                TransactionInformation.saveToJSON("src/main/data/transactionInformation.json");
                 refreshTable();
             } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(frame, "Invalid number for amount.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -142,7 +142,7 @@ public class DisplayTransactionInformation {
         int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to delete this transaction?", "Confirm", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             TransactionInformation.transactionList.remove(selectedRow);
-            TransactionInformation.saveToJSON("transactionInformation.json");
+            TransactionInformation.saveToJSON("src/main/data/transactionInformation.json");
             refreshTable();
         }
     }
