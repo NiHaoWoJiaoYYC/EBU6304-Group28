@@ -1,4 +1,4 @@
-package aiBudgetPlanner;
+
 
 import com.google.gson.*;
 import org.bupt.persosnalfinance.dto.TransactionInformation;

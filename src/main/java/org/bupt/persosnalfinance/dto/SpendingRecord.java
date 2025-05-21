@@ -1,4 +1,4 @@
-package aiBudgetPlanner;
+
 
 import java.util.*;
 
@@ -35,3 +35,4 @@ public class SpendingRecord {
         return list;
     }
 }
+

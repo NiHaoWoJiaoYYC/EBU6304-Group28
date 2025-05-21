@@ -1,4 +1,4 @@
-package aiBudgetPlanner;
+
 
 import javax.swing.*;
 import java.awt.*;

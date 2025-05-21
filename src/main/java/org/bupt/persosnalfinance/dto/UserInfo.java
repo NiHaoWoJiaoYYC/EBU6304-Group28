@@ -1,4 +1,4 @@
-package aiBudgetPlanner;
+
 
 public class UserInfo {
     private String occupation;
