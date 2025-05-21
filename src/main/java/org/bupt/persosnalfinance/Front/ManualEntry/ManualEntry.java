@@ -47,10 +47,9 @@ public class ManualEntry {
         panel.add(typeLabel, gbc);
 
         String[] types = {
-                "expenditure:Food", "expenditure:Shopping", "expenditure:Traffic",
-                "expenditure:Entertainment", "expenditure:Education", "expenditure:Medical",
-                "expenditure:Treatment", "expenditure:Other expenditures",
-                "income:Wage income", "income:Investment income", "income:Other income"
+                "Food", "Housing/Rent", "Daily Necessities", "Transportation",
+                "Entertainment", "Shopping", "Healthcare", "Education",
+                "Childcare", "Gifts", "Savings", "Others", "income"
         };
         JComboBox<String> typeComboBox = new JComboBox<>(types);
         gbc.gridx = 1;
