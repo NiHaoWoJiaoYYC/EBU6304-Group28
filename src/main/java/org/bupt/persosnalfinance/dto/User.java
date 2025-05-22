@@ -1,5 +1,16 @@
 package org.bupt.persosnalfinance.dto;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import org.bupt.persosnalfinance.dto.TransactionInformation;
+
+import java.io.FileReader;
+import java.io.Reader;
+import java.lang.reflect.Type;
+import java.nio.file.Path;
+import java.util.List;
+
+
 public class User {
     private double[] lastQuarterAvg; // 上期花费
     private double[] thisQuarter;    // 本期花费
@@ -39,5 +50,40 @@ public class User {
         };
 
         return user;
+    }
+
+
+    /**
+     * 读取给定 JSON 文件，并按固定列顺序
+     * {@code date, amount, type, object, remarks}
+     * 转换成二维字符串数组。
+     *
+     * @param jsonPath 相对于项目根目录的路径
+     *                 例如 "src/main/data/transactionInformation.json"
+     * @return String[row][col] 的表格
+     */
+    public static String[][] readJsonAsTable(String jsonPath) {
+        try (Reader reader = new FileReader(Path.of(jsonPath).toFile())) {
+
+            Type listType = new TypeToken<List<TransactionInformation>>(){}.getType();
+            List<TransactionInformation> list = new Gson().fromJson(reader, listType);
+
+            if (list == null || list.isEmpty()) return new String[0][0];
+
+            String[][] table = new String[list.size()][5];
+            for (int i = 0; i < list.size(); i++) {
+                TransactionInformation t = list.get(i);
+                table[i][0] = t.getDate();
+                table[i][1] = String.valueOf(t.getAmount());
+                table[i][2] = t.getType();
+                table[i][3] = t.getObject();
+                table[i][4] = t.getRemarks();
+            }
+            return table;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new String[0][0];
+        }
     }
 }
