@@ -84,10 +84,9 @@ public class DisplayTransactionInformation {
         JTextField dateField = new JTextField(t.getDate());
         JTextField amountField = new JTextField(String.valueOf(t.getAmount()));
         String[] types = {
-                "expenditure:Food", "expenditure:Shopping", "expenditure:Traffic",
-                "expenditure:Entertainment", "expenditure:Education", "expenditure:Medical",
-                "expenditure:Treatment", "expenditure:Other expenditures",
-                "income:Wage income", "income:Investment income", "income:Other income"
+                "Food", "Housing/Rent", "Daily Necessities", "Transportation",
+                "Entertainment", "Shopping", "Healthcare", "Education",
+                "Childcare", "Gifts", "Savings", "Others", "income"
         };
         JComboBox<String> typeComboBox = new JComboBox<>(types);
         typeComboBox.setSelectedItem(t.getType());
