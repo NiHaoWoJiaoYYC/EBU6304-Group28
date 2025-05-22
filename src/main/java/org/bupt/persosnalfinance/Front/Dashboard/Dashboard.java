@@ -201,7 +201,8 @@ public class Dashboard extends JFrame {
     }
 
     private void openAIBudgetPlanning() {
-        FullBudgetPlannerManager.showBudgetPlanner();}
+        FullBudgetPlannerManager.showBudgetPlanner();
+    }
 
 //    private void openAIBudgetAlerts() {
 //        JOptionPane.showMessageDialog(this, "Opening AI Budget Progress Alerts");
