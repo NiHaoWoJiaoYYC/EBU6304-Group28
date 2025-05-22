@@ -103,7 +103,7 @@ public class Dashboard extends JFrame {
                 monthlyExpenses.put(category, sum);
             }
             else monthlyIncome = sum;
-            System.out.println(category + ": " + sum);
+//            System.out.println(category + ": " + sum);
         });
     }
 
