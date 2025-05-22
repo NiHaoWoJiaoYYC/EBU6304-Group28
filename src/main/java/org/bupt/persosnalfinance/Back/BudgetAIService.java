@@ -17,30 +17,30 @@ public class BudgetAIService {
     /** 1. 根据用户信息构造 Prompt **/
     public static String buildPrompt(UserInfo user) {
         return String.format("""
-            根据以下用户信息，为他们制定月度预算（单位：人民币元），包括以下12个类别：
-            Food, Housing/Rent, Daily Necessities, Transportation, Entertainment,
-            Shopping, Healthcare, Education, Childcare, Gifts, Savings, Others.
+        Based on the user information below, please create a monthly budget (in CNY) covering these 12 categories:
+        Food, Housing/Rent, Daily Necessities, Transportation, Entertainment,
+        Shopping, Healthcare, Education, Childcare, Gifts, Savings, Others.
 
-            **要求**：
-            - 所有类别的预算总和必须等于用户的当月可支配收入（%.2f元）。
-            - 预算分配需符合用户的生活场景（职业、城市、家庭负担等）。
+        **Requirements**:
+        - The sum of all category budgets must equal the user's disposable income (%.2f CNY).
+        - Allocation should reflect the user's situation (occupation, city, number of dependents, etc.).
 
-            用户信息如下：
-            Occupation: %s
-            Disposable Income: %.2f
-            City: %s
-            Number of Elderly to Support: %d
-            Number of Children to Support: %d
-            Has Partner: %s
-            Has Pets: %s
+        User Information:
+        Occupation: %s
+        Disposable Income: %.2f
+        City: %s
+        Number of Elderly to Support: %d
+        Number of Children to Support: %d
+        Has Partner: %s
+        Has Pets: %s
 
-            请只返回 JSON 格式：
-            {
-              "Food": 1000,
-              "Housing/Rent": 2000,
-              ...
-            }
-            """,
+        Please return ONLY a JSON object, for example:
+        {
+          "Food": 1000,
+          "Housing/Rent": 2000,
+          ...
+        }
+        """,
                 user.getDisposableIncome(),
                 user.getOccupation(),
                 user.getDisposableIncome(),
@@ -51,6 +51,7 @@ public class BudgetAIService {
                 user.isHasPets()
         );
     }
+
 
     /** 2. 调用 AI 接口，得到预算 **/
     public static Map<String, Double> generateBudget(UserInfo user) {

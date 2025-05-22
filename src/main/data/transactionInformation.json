@@ -1,5 +1,13 @@
 [
   {
+    "date": "2025/5/15",
+    "amount": 200.0,
+    "type": "Education",
+    "object": "Clothing store",
+    "remarks": "Add Remark..."
+  },
+
+  {
     "date": "2025/5/14",
     "amount": 100.0,
     "type": "Shopping",
@@ -9,7 +17,7 @@
   {
     "date": "2024/2/18",
     "amount": 99.0,
-    "type": "Shopping",
+    "type": "Education",
     "object": "Supermarket",
     "remarks": "WX"
   },
