@@ -4,10 +4,9 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.List;
+
 import javafx.application.Platform;
 import org.bupt.persosnalfinance.Front.ManualEntry.ManualEntryManager;
 import org.bupt.persosnalfinance.Front.ManualEntry.TransactionListManager;
@@ -30,7 +29,7 @@ public class Dashboard extends JFrame {
 
     public Dashboard() {
         setTitle("Personal Finance Dashboard");
-        setSize(1000, 700);
+        setSize(1200, 724);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
@@ -167,9 +166,13 @@ public class Dashboard extends JFrame {
             }
         });
 
-        for (int i = 0; i < transactions.size(); i++) {
+        for (int i = 0; i < 29; i++) {
             TransactionInformation t = transactions.get(i);
-            tableModel.addRow(new Object[]{t.getDate(), String.format("$%.2f", t.getAmount()), t.getType(), t.getObject(), t.getRemarks()});
+            if (Objects.equals(t.getType(), "Income")) {
+                tableModel.addRow(new Object[]{t.getDate(), String.format("+ %.2f", t.getAmount()), t.getType(), t.getObject(), t.getRemarks()});
+            } else {
+                tableModel.addRow(new Object[]{t.getDate(), String.format("- %.2f", t.getAmount()), t.getType(), t.getObject(), t.getRemarks()});
+            }
         }
     }
 

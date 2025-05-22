@@ -49,7 +49,7 @@ public class ManualEntry {
         String[] types = {
                 "Food", "Housing/Rent", "Daily Necessities", "Transportation",
                 "Entertainment", "Shopping", "Healthcare", "Education",
-                "Childcare", "Gifts", "Savings", "Others", "income"
+                "Childcare", "Gifts", "Savings", "Others", "Income"
         };
         JComboBox<String> typeComboBox = new JComboBox<>(types);
         gbc.gridx = 1;
