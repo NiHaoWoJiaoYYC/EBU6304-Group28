@@ -4,6 +4,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import org.bupt.persosnalfinance.Front.Dashboard.Dashboard;
 import org.bupt.persosnalfinance.Front.importcsv.ImportCSVPanel;
 
@@ -27,6 +30,15 @@ public class HomePage extends JFrame {
         JButton createButton = new JButton("Create New Book");
         createButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                try {
+                    String filePath = "src/main/data/transactionInformation.json";
+                    FileWriter fileWriter = new FileWriter(filePath);
+                    fileWriter.write(""); // 写入空JSON对象
+                    fileWriter.close();
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                    // 可以根据需要添加错误处理逻辑
+                }
                 Dashboard dashboard = new Dashboard();
                 dashboard.setVisible(true);
                 dispose(); // 关闭 HomePage 窗口

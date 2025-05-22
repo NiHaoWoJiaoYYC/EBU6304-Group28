@@ -6,6 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import javafx.application.Platform;
+import org.bupt.persosnalfinance.Front.AlertFront.BudgetApp;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -14,6 +17,7 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.bupt.persosnalfinance.Front.ManualEntry.ManualEntryManager;
 import org.bupt.persosnalfinance.Front.ManualEntry.TransactionListManager;
 import org.bupt.persosnalfinance.Front.AIBudgetPlanner.FullBudgetPlannerManager;
+import org.bupt.persosnalfinance.Front.ExportCsvPanel.ExportCsvPanel;
 
 public class Dashboard extends JFrame {
 
@@ -153,8 +157,8 @@ public class Dashboard extends JFrame {
         JButton overspendBtn = new JButton("Overspend Reminder");
         overspendBtn.addActionListener(e -> openOverspendReminder());
 
-        JButton aiClassifyBtn = new JButton("AI Transaction Classify");
-        aiClassifyBtn.addActionListener(e -> openAITransactionClassify());
+        JButton ExportcsvBtn = new JButton("Save and Export as Csv");
+        ExportcsvBtn.addActionListener(e -> openExportCsv());
 
         JButton aiBudgetBtn = new JButton("AI Personalized Budget Planning");
         aiBudgetBtn.addActionListener(e -> openAIBudgetPlanning());
@@ -167,8 +171,8 @@ public class Dashboard extends JFrame {
 
         buttonPanel.add(entryBtn);
         buttonPanel.add(transactionListBtn);
+        buttonPanel.add(ExportcsvBtn);
         buttonPanel.add(overspendBtn);
-        buttonPanel.add(aiClassifyBtn);
         buttonPanel.add(aiBudgetBtn);
         buttonPanel.add(reqLocBtn);
 //        buttonPanel.add(aiAlertsBtn);
@@ -191,13 +195,41 @@ public class Dashboard extends JFrame {
     private void openRequirementLocalization() {
         JOptionPane.showMessageDialog(this, "Opening Requirement Localization");
     }
-
+    //待对接同学调试完毕后完善
     private void openOverspendReminder() {
-        JOptionPane.showMessageDialog(this, "Opening Overspend Reminder");
+        new Thread(() -> {
+            try {
+                BudgetApp.launch(BudgetApp.class);
+            } catch (IllegalStateException e) {
+                JOptionPane.showMessageDialog(null,
+                        "Budget application window is already open",
+                        "Information", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null,
+                        "Failed to launch budget application: " + e.getMessage(),
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }).start();
     }
 
-    private void openAITransactionClassify() {
-        JOptionPane.showMessageDialog(this, "Opening AI Transaction Classify");
+    private void openExportCsv() {
+        // Create a new dialog window
+        JDialog exportDialog = new JDialog();
+        exportDialog.setTitle("Export CSV");
+        exportDialog.setModal(true); // Make it modal to block other windows
+        exportDialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        // Create and add the ExportCsvPanel to the dialog
+        ExportCsvPanel exportPanel = new ExportCsvPanel();
+        exportDialog.add(exportPanel);
+
+        // Set preferred size and pack
+        exportDialog.setPreferredSize(new Dimension(600, 400));
+        exportDialog.pack();
+
+        // Center the dialog relative to parent window
+        exportDialog.setLocationRelativeTo(null);
+        exportDialog.setVisible(true);
     }
 
     private void openAIBudgetPlanning() {
