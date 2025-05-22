@@ -1,6 +1,7 @@
 package org.bupt.persosnalfinance.Util;
 
 import org.bupt.persosnalfinance.dto.TransactionInformation;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -9,6 +10,7 @@ import java.util.*;
 /**
  * JSON ↔ 表格转换工具
  */
+@Component
 public class Converter2 {
 
     /* ---------------------------------------------------------------- */
