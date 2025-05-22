@@ -8,20 +8,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
-
 import javafx.application.Platform;
+import org.bupt.persosnalfinance.Front.ManualEntry.ManualEntryManager;
+import org.bupt.persosnalfinance.Front.ManualEntry.TransactionListManager;
+import org.bupt.persosnalfinance.Front.AIBudgetPlanner.FullBudgetPlannerManager;
+import org.bupt.persosnalfinance.Front.ExportCsvPanel.ExportCsvPanel;
 import org.bupt.persosnalfinance.Front.AlertFront.BudgetApp;
 import org.bupt.persosnalfinance.Front.HomePage.HomePage;
+import org.bupt.persosnalfinance.Front.Localization.CombinedUIManager;
 import org.bupt.persosnalfinance.dto.TransactionInformation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
-
-import org.bupt.persosnalfinance.Front.ManualEntry.ManualEntryManager;
-import org.bupt.persosnalfinance.Front.ManualEntry.TransactionListManager;
-import org.bupt.persosnalfinance.Front.AIBudgetPlanner.FullBudgetPlannerManager;
-import org.bupt.persosnalfinance.Front.ExportCsvPanel.ExportCsvPanel;
 
 public class Dashboard extends JFrame {
 
@@ -233,9 +232,7 @@ public class Dashboard extends JFrame {
         // 如果选择 "Cancel"，不做任何操作
     }
 
-    /**
-     * 关闭所有可见的 JFrame 和 JDialog（除了当前进程的主窗口）
-     */
+
     private void closeAllWindows() {
         // 获取所有可见的 JFrame
         for (Frame frame : Frame.getFrames()) {
@@ -262,8 +259,9 @@ public class Dashboard extends JFrame {
     }
 
     private void openRequirementLocalization() {
-        JOptionPane.showMessageDialog(this, "Opening Requirement Localization");
+        CombinedUIManager.showCombinedUI();
     }
+
     //待对接同学调试完毕后完善
     private void openOverspendReminder() {
         new Thread(() -> {
