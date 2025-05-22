@@ -7,6 +7,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.lang.reflect.Field;
 
+
 public class TransactionListManager {
     private static JFrame currentListWindow;
 
