@@ -1,7 +1,7 @@
 package org.bupt.persosnalfinance.Front.Localization;
 
 import org.bupt.persosnalfinance.dto.HolidayDTO;
-import org.bupt.persosnalfinance.Back.Service.HolidayService;
+import org.bupt.persosnalfinance.Back.Controller.LocalizationController;
 
 import javax.swing.*;
 import javax.swing.event.ChangeListener;
@@ -14,15 +14,15 @@ import java.util.List;
 import java.util.function.BiConsumer;
 
 /**
- * HolidayPanel：假期选择与日期管理面板，支持回调及获取当前选中假期ID，并验证日期逻辑。
+ * HolidayPanel：假期选择与日期管理面板，支持通过 Controller 获取数据、更新并验证日期逻辑。
  */
 public class HolidayPanel extends JPanel {
-    private final HolidayService service = new HolidayService();
+    private LocalizationController controller;
     private final JComboBox<String> holidayCombo;
     private final JSpinner startSpinner;
     private final JSpinner endSpinner;
     private final JLabel daysLeftLabel;
-    private List<HolidayDTO> holidays;
+    private List<HolidayDTO> holidays = Collections.emptyList();
     private BiConsumer<LocalDate, LocalDate> onDateRangeChanged;
 
     public HolidayPanel() {
@@ -35,7 +35,7 @@ public class HolidayPanel extends JPanel {
         addBtn.addActionListener(e -> {
             String name = JOptionPane.showInputDialog(this, "Holiday name:");
             if (name != null && !name.trim().isEmpty()) {
-                service.addCustomHoliday(name.trim());
+                controller.addCustomHoliday(name.trim());
                 loadHolidays();
                 holidayCombo.setSelectedItem(name.trim());
             }
@@ -63,18 +63,25 @@ public class HolidayPanel extends JPanel {
         ChangeListener dateListener = e -> notifyDateChanged();
         startSpinner.addChangeListener(dateListener);
         endSpinner  .addChangeListener(dateListener);
+    }
 
+    /**
+     * 注入 Controller 并初始化数据
+     */
+    public void setController(LocalizationController controller) {
+        this.controller = controller;
         loadHolidays();
     }
 
     private void loadHolidays() {
-        holidays = service.getAllHolidays();
+        holidays = controller.getAllHolidays();
         holidayCombo.removeAllItems();
         for (HolidayDTO h : holidays) {
             holidayCombo.addItem(h.getName());
         }
         if (!holidays.isEmpty()) {
             holidayCombo.setSelectedIndex(0);
+            applySelectedHoliday();
         }
     }
 
@@ -124,7 +131,7 @@ public class HolidayPanel extends JPanel {
         daysLeftLabel.setForeground(Color.BLACK);
 
         // 更新服务
-        service.updateHolidayDates(dto, start, end);
+        controller.updateHolidayDates(dto, start, end);
 
         // 回调通知
         if (onDateRangeChanged != null) {
@@ -140,17 +147,16 @@ public class HolidayPanel extends JPanel {
     }
 
     /**
-     * 获取当前选中假期的 ID，若 DTO.id 为空，返回索引
+     * 获取当前选中假期的 ID
      */
     public Integer getSelectedHolidayId() {
         String name = (String) holidayCombo.getSelectedItem();
         if (holidays == null || holidays.isEmpty()) {
             return holidayCombo.getSelectedIndex();
         }
-        for (int i = 0; i < holidays.size(); i++) {
-            HolidayDTO dto = holidays.get(i);
+        for (HolidayDTO dto : holidays) {
             if (dto.getName().equals(name)) {
-                return dto.getId() != null ? dto.getId() : i;
+                return dto.getId() != null ? dto.getId() : holidays.indexOf(dto);
             }
         }
         return holidayCombo.getSelectedIndex();

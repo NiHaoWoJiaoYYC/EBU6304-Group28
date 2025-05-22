@@ -1,23 +1,33 @@
 package org.bupt.persosnalfinance.Front.Localization;
 
+import java.time.ZoneId;
+import org.bupt.persosnalfinance.Back.Controller.LocalizationController;
+
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * CombinedUI：将 HolidayPanel 与 PlanPanel 嵌入同一窗口，实现上下联动并支持默认预算添加
+ * CombinedUI：将 HolidayPanel 与 PlanPanel 嵌入同一窗口，实现上下联动并使用 LocalizationController。
  */
 public class CombinedUI extends JFrame {
     private final HolidayPanel holidayPanel;
     private final PlanPanel planPanel;
+    private final LocalizationController controller;
 
     public CombinedUI() {
         super("Holiday → Spending Dashboard");
+        // 初始化 Controller
+        controller = new LocalizationController();
+
+        // 初始化面板，并注入 controller
+        holidayPanel = new HolidayPanel();
+        holidayPanel.setController(controller);
+
+        planPanel = new PlanPanel();
+        planPanel.setController(controller);
+
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
-
-        // 初始化面板
-        holidayPanel = new HolidayPanel();
-        planPanel    = new PlanPanel();
 
         // 垂直分割，上半是假期面板，下半是预算面板
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, holidayPanel, planPanel);
@@ -30,7 +40,7 @@ public class CombinedUI extends JFrame {
             planPanel.setHolidayId(hid);
         });
 
-        // 初始加载：设置默认选中假期的预算列表，使 Add 按钮立即可用
+        // 初始加载：设置默认选中假期的预算列表
         SwingUtilities.invokeLater(() -> {
             Integer initialId = holidayPanel.getSelectedHolidayId();
             planPanel.setHolidayId(initialId);

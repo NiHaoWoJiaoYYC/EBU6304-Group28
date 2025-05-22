@@ -1,7 +1,7 @@
 package org.bupt.persosnalfinance.Front.Localization;
 
 import org.bupt.persosnalfinance.dto.PlanDTO;
-import org.bupt.persosnalfinance.Back.Service.PlanService;
+import org.bupt.persosnalfinance.Back.Controller.LocalizationController;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -13,7 +13,6 @@ import java.awt.*;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,17 +21,17 @@ import java.util.Map;
 
 /**
  * PlanPanel 支持按 Holiday ID 分组显示和添加预算记录，切换 Holiday 时具有记忆性。
- * 现在使用 planService.getAllRecords() 并根据 holidayId 过滤，避免调用未实现的方法。
+ * 使用 LocalizationController 统一调度业务逻辑。
  */
 public class PlanPanel extends JPanel {
-    private final PlanService planService = new PlanService();
+    private LocalizationController controller;
     private final DefaultTableModel model;
     private final JTable table;
     private final DefaultPieDataset<String> dataset;
-
+    
     // 当前所属的节假日ID
     private Integer currentHolidayId;
-
+    
     // 添加记录的输入组件
     private final JSpinner dateSpinner;
     private final JComboBox<String> categoryCombo;
@@ -90,6 +89,17 @@ public class PlanPanel extends JPanel {
     }
 
     /**
+     * 注入 Controller 并初始化数据
+     */
+    public void setController(LocalizationController controller) {
+        this.controller = controller;
+        // 加载并展示当前 holidayId 对应的数据
+        if (currentHolidayId != null) {
+            refresh();
+        }
+    }
+
+    /**
      * 设置当前节假日ID并刷新显示（保留该节假日上次的输入记录）。
      */
     public void setHolidayId(Integer holidayId) {
@@ -101,7 +111,7 @@ public class PlanPanel extends JPanel {
      * 添加记录：会关联 currentHolidayId，一旦切换回该节假日可见。
      */
     private void onAdd() {
-        if (currentHolidayId == null) {
+        if (controller == null || currentHolidayId == null) {
             JOptionPane.showMessageDialog(this, "Please select a holiday first.", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -115,7 +125,7 @@ public class PlanPanel extends JPanel {
                 throw new IllegalArgumentException("Amount must be > 0");
             }
             double amt = num.doubleValue();
-            planService.addRecord(new PlanDTO(currentHolidayId, ld, cat, pay, amt));
+            controller.addPlan(currentHolidayId, ld, cat, pay, amt);
             clearInputs();
             refresh();
         } catch (Exception ex) {
@@ -127,7 +137,7 @@ public class PlanPanel extends JPanel {
      * 删除选中行记录。
      */
     private void onDelete() {
-        if (currentHolidayId == null) {
+        if (controller == null || currentHolidayId == null) {
             JOptionPane.showMessageDialog(this, "Please select a holiday first.", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
@@ -136,17 +146,11 @@ public class PlanPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Please select at least one row to delete.", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        // 先过滤出当前节假日的所有记录
-        List<PlanDTO> list = new ArrayList<>();
-        for (PlanDTO p : planService.getAllRecords()) {
-            if (currentHolidayId.equals(p.getHolidayId())) {
-                list.add(p);
-            }
-        }
+        // 获取当前节假日的计划列表
+        List<PlanDTO> list = controller.getPlansForHoliday(currentHolidayId);
         // 按选中逆序删除
         for (int i = rows.length - 1; i >= 0; i--) {
-            PlanDTO p = list.get(rows[i]);
-            planService.removeRecord(p.getId());
+            controller.removePlan(list.get(rows[i]).getId());
         }
         refresh();
     }
@@ -157,12 +161,10 @@ public class PlanPanel extends JPanel {
     private void refresh() {
         model.setRowCount(0);
         Map<String, Double> sums = new HashMap<>();
-        if (currentHolidayId != null) {
-            for (PlanDTO p : planService.getAllRecords()) {
-                if (currentHolidayId.equals(p.getHolidayId())) {
-                    model.addRow(new Object[]{p.getDate(), p.getCategory(), p.getPaymentMethod(), p.getAmount()});
-                    sums.merge(p.getCategory(), p.getAmount(), Double::sum);
-                }
+        if (controller != null && currentHolidayId != null) {
+            for (PlanDTO p : controller.getPlansForHoliday(currentHolidayId)) {
+                model.addRow(new Object[]{p.getDate(), p.getCategory(), p.getPaymentMethod(), p.getAmount()});
+                sums.merge(p.getCategory(), p.getAmount(), Double::sum);
             }
         }
         dataset.clear();
@@ -180,4 +182,5 @@ public class PlanPanel extends JPanel {
         amountField.setValue(null);
     }
 }
+
 
