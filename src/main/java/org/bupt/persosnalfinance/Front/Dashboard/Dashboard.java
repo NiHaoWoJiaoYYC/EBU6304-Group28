@@ -82,23 +82,27 @@ public class Dashboard extends JFrame {
     }
 
     private void initializeSampleData() {
-        monthlyExpenses.put("Food", 1352.44);
-        monthlyExpenses.put("Housing/Rent", 910.00);
-        monthlyExpenses.put("Daily Necessities", 676.50);
-        monthlyExpenses.put("Transportation", 509.00);
-        monthlyExpenses.put("Entertainment", 120.00);
-        monthlyExpenses.put("Shopping", 910.00);
-        monthlyExpenses.put("Healthcare", 676.50);
-        monthlyExpenses.put("Education", 509.00);
-        monthlyExpenses.put("Childcare", 120.00);
-        monthlyExpenses.put("Gifts", 910.00);
-        monthlyExpenses.put("Savings", 676.50);
-        monthlyExpenses.put("Others", 509.00);
+        monthlyExpenses.put("Food", 0.00);
+        monthlyExpenses.put("Housing/Rent", 0.00);
+        monthlyExpenses.put("Daily Necessities", 0.00);
+        monthlyExpenses.put("Transportation", 0.00);
+        monthlyExpenses.put("Entertainment", 0.00);
+        monthlyExpenses.put("Shopping", 0.00);
+        monthlyExpenses.put("Healthcare", 0.00);
+        monthlyExpenses.put("Education", 0.00);
+        monthlyExpenses.put("Childcare", 0.00);
+        monthlyExpenses.put("Gifts", 0.00);
+        monthlyExpenses.put("Savings", 0.00);
+        monthlyExpenses.put("Others", 0.00);
 
-        monthlyIncome = 10216.79;
+        monthlyIncome = 0.00;
 
         Map<String, Double> monthlySums = calculateMonthlyCategorySums();
         monthlySums.forEach((category, sum) -> {
+            if(!"Income".equals(category)) {
+                monthlyExpenses.put(category, sum);
+            }
+            else monthlyIncome = sum;
             System.out.println(category + ": " + sum);
         });
     }
