@@ -54,36 +54,28 @@ public class User {
 
 
     /**
-     * 读取给定 JSON 文件，并按固定列顺序
-     * {@code date, amount, type, object, remarks}
-     * 转换成二维字符串数组。
+     * @param jsonPath "src/main/data/transactionInformation.json"
      *
-     * @param jsonPath 相对于项目根目录的路径
-     *                 例如 "src/main/data/transactionInformation.json"
-     * @return String[row][col] 的表格
+     * @return String[row][col]  表头顺序：date, amount, type, object, remarks
      */
-    public static String[][] readJsonAsTable(String jsonPath) {
-        try (Reader reader = new FileReader(Path.of(jsonPath).toFile())) {
+    public static String[][] jsonToTable(String jsonPath) {
 
-            Type listType = new TypeToken<List<TransactionInformation>>(){}.getType();
-            List<TransactionInformation> list = new Gson().fromJson(reader, listType);
+        // 利用 DTO 自带的读文件方法
+        TransactionInformation.loadFromJSON(jsonPath);
 
-            if (list == null || list.isEmpty()) return new String[0][0];
+        List<TransactionInformation> list =
+                TransactionInformation.transactionList;
 
-            String[][] table = new String[list.size()][5];
-            for (int i = 0; i < list.size(); i++) {
-                TransactionInformation t = list.get(i);
-                table[i][0] = t.getDate();
-                table[i][1] = String.valueOf(t.getAmount());
-                table[i][2] = t.getType();
-                table[i][3] = t.getObject();
-                table[i][4] = t.getRemarks();
-            }
-            return table;
+        String[][] table = new String[list.size()][5];
 
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new String[0][0];
+        for (int i = 0; i < list.size(); i++) {
+            TransactionInformation t = list.get(i);
+            table[i][0] = t.getDate();
+            table[i][1] = String.valueOf(t.getAmount());
+            table[i][2] = t.getType();
+            table[i][3] = t.getObject();
+            table[i][4] = t.getRemarks();
         }
+        return table;
     }
 }
