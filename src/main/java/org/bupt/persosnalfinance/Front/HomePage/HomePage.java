@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import org.bupt.persosnalfinance.Front.Dashboard.Dashboard;
 import org.bupt.persosnalfinance.Front.importcsv.ImportCSVPanel;
+import org.bupt.persosnalfinance.Util.ImportSuccessListener;
 
 public class HomePage extends JFrame {
 
@@ -55,6 +56,11 @@ public class HomePage extends JFrame {
                 // Add your ImportCSVPanel to it
                 ImportCSVPanel importPanel = new ImportCSVPanel();
                 importDialog.add(importPanel);
+
+                importPanel.setImportSuccessListener(() -> {
+                    dispose();  // 关闭 HomePage
+                    new Dashboard().setVisible(true);  // 打开 Dashboard
+                });
 
                 // Configure and show the window
                 importDialog.pack();

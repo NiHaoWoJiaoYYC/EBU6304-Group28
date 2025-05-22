@@ -8,11 +8,13 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import org.bupt.persosnalfinance.Util.ImportSuccessListener;
 
 /**
  * Swing 面板：选择 CSV -> 预览 -> 上传给后端 /api/importcsv
@@ -139,6 +141,12 @@ public class ImportCSVPanel extends JPanel {
                 "CSV Preview (first 100 rows)", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    private ImportSuccessListener successListener;
+
+    public void setImportSuccessListener(ImportSuccessListener listener) {
+        this.successListener = listener;
+    }
+
     /** Submit：把整份 CSV 文件 POST 给后端 */
     private void onSubmit(ActionEvent e) {
         if (csvFile == null) {
@@ -165,6 +173,21 @@ public class ImportCSVPanel extends JPanel {
             JOptionPane.showMessageDialog(this,
                     "Successfully imported " + inserted + " transactions!",
                     "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            if (inserted != null) {
+                // 关闭当前 Dialog
+                Window parentWindow = SwingUtilities.getWindowAncestor(this);
+                if (parentWindow != null) {
+                    parentWindow.dispose();
+                }
+
+                // 触发回调（通知 HomePage 关闭并打开 Dashboard）
+                if (successListener != null) {
+                    successListener.onImportSuccess();
+                } else {
+                    System.err.println("successListener is null！");
+                }
+            }
 
         } catch (Exception ex) {
             ex.printStackTrace();
