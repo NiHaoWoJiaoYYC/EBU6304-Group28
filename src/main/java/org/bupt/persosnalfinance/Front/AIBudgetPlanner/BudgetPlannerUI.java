@@ -1,11 +1,10 @@
-package org.bupt.persosnalfinance.Front;
+package org.bupt.persosnalfinance.Front.AIBudgetPlanner;
 
 import org.bupt.persosnalfinance.dto.UserInfo;
 import org.bupt.persosnalfinance.Back.Service.BudgetAIService;
 import org.bupt.persosnalfinance.dto.SpendingRecord;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.List;
 import java.util.Map;
 

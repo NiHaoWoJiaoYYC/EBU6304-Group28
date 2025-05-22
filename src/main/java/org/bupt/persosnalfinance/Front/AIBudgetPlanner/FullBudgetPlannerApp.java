@@ -1,4 +1,4 @@
-package org.bupt.persosnalfinance.Front;
+package org.bupt.persosnalfinance.Front.AIBudgetPlanner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -34,7 +34,7 @@ public class FullBudgetPlannerApp {
 
     private void createAndShow() {
         frame = new JFrame("AI Personalized Budget Planning");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(1000, 650);
         frame.setLayout(new BorderLayout(5,5));
 
