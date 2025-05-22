@@ -177,7 +177,7 @@ public class Dashboard extends JFrame {
     }
 
     private void openHomePage() {
-
+        JOptionPane.showMessageDialog(this, "Are you sure you have saved your account book? After returning to the home page, it will not be saved.");
     }
 
     private void openTransactionList() {
