@@ -43,7 +43,9 @@ public class ObservationFrame extends JFrame {
     private JButton send;
 
     /* ------------ 数据 ------------ */
-    private List<TransactionInformation> data;
+    private List<TransactionInformation> data;         // 原始 – 含 Income
+    private List<TransactionInformation> chartData;    // 过滤后 – 不含 Income
+
 
     /* ------------ 构造 ------------ */
     public ObservationFrame() {
@@ -66,7 +68,7 @@ public class ObservationFrame extends JFrame {
     private void buildTop() {
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
         top.add(new JLabel("Classify by:"));
-        combo = new JComboBox<>(new String[]{"Category", "Payment", "Month"});
+        combo = new JComboBox<>(new String[]{"Category", "Payment"});
         combo.addActionListener(this::onDimensionChange);
         top.add(combo);
         add(top, BorderLayout.NORTH);
@@ -138,31 +140,33 @@ public class ObservationFrame extends JFrame {
                         HttpMethod.GET, null,
                         new ParameterizedTypeReference<>() {});
         data = resp.getBody() != null ? resp.getBody() : List.of();
+
+        /* 过滤掉 type 等于 "Income"（忽略大小写，也可用 startsWith） */
+        chartData = data.stream()
+                .filter(t -> !t.getType().equalsIgnoreCase("Income"))
+                .toList();
     }
 
     /* ===== 表格 ===== */
     private void populateTable() {
-        String[] cols = {"Date", "Category", "Payment", "Amount"};
-        Object[][] rows = data.stream()
+        String[] cols = {"Date","Category","Payment","Amount"};
+        Object[][] rows = chartData.stream()
                 .map(t -> new Object[]{
                         t.getDate(),
                         t.getType(),
                         t.getObject(),
-                        t.getAmount()
-                }).toArray(Object[][]::new);
+                        t.getAmount()})
+                .toArray(Object[][]::new);
         table.setModel(new DefaultTableModel(rows, cols));
     }
 
     /* ===== 饼图 ===== */
     private void refreshChart() {
-        Map<String, Double> grouped = switch ((String) combo.getSelectedItem()) {
-            case "Payment" -> data.stream().collect(Collectors.groupingBy(
+        Map<String,Double> grouped = switch ((String)combo.getSelectedItem()) {
+            case "Payment" -> chartData.stream().collect(Collectors.groupingBy(
                     TransactionInformation::getObject,
                     Collectors.summingDouble(TransactionInformation::getAmount)));
-            case "Month" -> data.stream().collect(Collectors.groupingBy(
-                    t -> LocalDate.parse(t.getDate(), FMT).getMonth().toString(),
-                    Collectors.summingDouble(TransactionInformation::getAmount)));
-            default -> data.stream().collect(Collectors.groupingBy(
+            default -> chartData.stream().collect(Collectors.groupingBy(
                     TransactionInformation::getType,
                     Collectors.summingDouble(TransactionInformation::getAmount)));
         };
