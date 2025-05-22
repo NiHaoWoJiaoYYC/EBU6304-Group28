@@ -1,4 +1,4 @@
-package org.bupt.persosnalfinance.Front;
+package org.bupt.persosnalfinance.Front.AIBudgetPlanner;
 
 import org.bupt.persosnalfinance.dto.SpendingRecord;
 

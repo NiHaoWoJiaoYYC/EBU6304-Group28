@@ -1,0 +1,15 @@
+[ {
+  "id" : null,
+  "holidayId" : 0,
+  "date" : "2025-05-22",
+  "category" : "Food",
+  "paymentMethod" : "WX",
+  "amount" : 123.0
+}, {
+  "id" : null,
+  "holidayId" : 1,
+  "date" : "2025-05-22",
+  "category" : "Food",
+  "paymentMethod" : "WX",
+  "amount" : 1110.0
+} ]

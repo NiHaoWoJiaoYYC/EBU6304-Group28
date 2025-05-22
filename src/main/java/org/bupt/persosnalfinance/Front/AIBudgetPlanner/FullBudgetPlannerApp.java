@@ -1,4 +1,4 @@
-package org.bupt.persosnalfinance.Front;
+package org.bupt.persosnalfinance.Front.AIBudgetPlanner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -22,19 +22,31 @@ import java.util.List;
 import java.util.Map;
 
 public class FullBudgetPlannerApp {
+    private static FullBudgetPlannerApp instance;
     private JFrame frame;
     private JTextArea suggestionArea;
     private JPanel centerPanel;
     private JFrame budgetFrame;  // 月预算窗口
     private static final String BUDGET_JSON = "src/main/data/current_budget.json";
 
+    public static synchronized void showBudgetPlanner() {
+        if (instance == null || instance.frame == null || !instance.frame.isDisplayable()) {
+            SwingUtilities.invokeLater(() -> {
+                instance = new FullBudgetPlannerApp();
+                instance.createAndShow();
+            });
+        } else {
+            instance.frame.toFront();
+        }
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> new FullBudgetPlannerApp().createAndShow());
+        showBudgetPlanner();
     }
 
     private void createAndShow() {
         frame = new JFrame("AI Personalized Budget Planning");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(1000, 650);
         frame.setLayout(new BorderLayout(5,5));
 

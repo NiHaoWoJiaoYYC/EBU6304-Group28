@@ -1,9 +1,11 @@
 package org.bupt.persosnalfinance.Back.Controller;
 
+import jakarta.annotation.Resource;
 import org.apache.tomcat.util.buf.UEncoder;
 import org.bupt.persosnalfinance.Back.Response.BudgetDataResponse;
 import org.bupt.persosnalfinance.Back.Response.BudgetResponse;
 import org.bupt.persosnalfinance.Back.Service.BudgetService;
+import org.bupt.persosnalfinance.Util.Converter2;
 import org.bupt.persosnalfinance.dto.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,18 +15,36 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/budget")
 public class BudgetController {
 
-    @Autowired
+    @Resource
     private BudgetService budgetService;
+
 
     @PostMapping("/check")
     public BudgetResponse checkOverspending(@RequestBody User user,
                                             @RequestParam double threshold) {
-        User userT= User.mockUser();
-        return budgetService.checkOverspending(userT, threshold);
+
+        return budgetService.checkOverspending(user, threshold);
     }
     @GetMapping("/data")
     public BudgetDataResponse getBudgetData() {
-        User mockUser = User.mockUser();
+        User user= new User();
+        Double[] thisQ=Converter2.monthTypeSummary("src/main/data/transactionInformation.json","2024-01");
+        double[] thisQuarter=new double[thisQ.length];
+        for (int i = 0; i < thisQ.length; i++) {
+            thisQuarter[i]=thisQ[i];
+
+        }
+        user.setThisQuarter(thisQuarter);
+
+
+        Double[] lastQ=Converter2.monthTypeSummary("src/main/data/transactionInformation.json","2024-02");
+        double[] lastQuarter=new double[thisQ.length];
+        for (int i = 0; i < lastQ.length; i++) {
+            lastQuarter[i]=lastQ[i];
+
+        }
+        user.setLastQuarterAvg(lastQuarter);
+
         BudgetDataResponse response = new BudgetDataResponse();
 
         response.setCategories(new String[]{
@@ -33,8 +53,8 @@ public class BudgetController {
                 "Childcare", "Gifts", "Savings", "Others"
         });
 
-        response.setLastQuarterAvg(mockUser.getLastQuarterAvg());
-        response.setThisQuarter(mockUser.getThisQuarter());
+        response.setLastQuarterAvg(user.getLastQuarterAvg());
+        response.setThisQuarter(user.getThisQuarter());
 
         return response;
     }
