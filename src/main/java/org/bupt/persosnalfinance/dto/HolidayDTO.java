@@ -4,25 +4,43 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * DTO: 节假日数据传输对象
- * 包含假期名称、开始日期和结束日期
+ * 节假日数据传输对象，包含唯一 ID、名称及开始/结束日期。
  */
 public class HolidayDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private String name;
-    private LocalDate startDate;
-    private LocalDate endDate;
+    private Integer id;           // 唯一标识
+    private String name;          // 假期名称
+    private LocalDate startDate;  // 开始日期
+    private LocalDate endDate;    // 结束日期
 
+    public HolidayDTO() {}
 
-    public HolidayDTO() {
-    }
-
-
+    /**
+     * 构造器：仅名称与日期，无需 ID
+     */
     public HolidayDTO(String name, LocalDate startDate, LocalDate endDate) {
         this.name = name;
         this.startDate = startDate;
         this.endDate = endDate;
+    }
+
+    /**
+     * 完整构造器：包含 ID
+     */
+    public HolidayDTO(Integer id, String name, LocalDate startDate, LocalDate endDate) {
+        this.id = id;
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -52,10 +70,12 @@ public class HolidayDTO implements Serializable {
     @Override
     public String toString() {
         return "HolidayDTO{" +
-               "name='" + name + '\'' +
+               "id=" + id +
+               ", name='" + name + '\'' +
                ", startDate=" + startDate +
                ", endDate=" + endDate +
                '}';
     }
 }
+
 
