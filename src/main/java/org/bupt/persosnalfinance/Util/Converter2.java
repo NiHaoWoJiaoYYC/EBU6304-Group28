@@ -79,40 +79,39 @@ public class Converter2 {
     }
 
     /* ---------------------------------------------------------------- */
-    /* ③ 指定月份 -> 各类别总开销二维表                                 */
+    /* ③ 指定月份 -> 固定顺序类别金额数组                               */
     /* ---------------------------------------------------------------- */
     /**
-     * @param jsonPath "src/main/data/transactionInformation.json"
-     * @param monthKey "yyyy-MM" 形式的月份键（例：2024-02）
-     * @return String[row][2]，每行 [type, totalAmount]；若无记录返回空数组
+     * @param jsonPath JSON 文件路径
+     * @param monthKey yyyy-MM 形式（例: 2024-02）
+     * @return Double[12]（或你分类数），顺序见 CATEGORIES；无记录处为 0.0
      */
     public static Double[] monthTypeSummary(String jsonPath, String monthKey) {
 
-        // 读取指定月份的全部明细
+        final String[] CATEGORIES = {
+                "Food", "Housing/Rent", "Daily Necessities", "Transportation",
+                "Entertainment", "Shopping", "Healthcare", "Education",
+                "Childcare", "Gifts", "Savings", "Others"
+        };
+
+        /* 1. 读取指定月份明细 */
         String[][] monthTable = jsonToMonthTable(jsonPath, monthKey);
-        if (monthTable.length == 0) return new Double[0];
-
-        // 累加各类型金额
-        Map<String, Double> sumMap = new LinkedHashMap<>();
-        for (String[] row : monthTable) {
-            String type  = row[2];
-            double amt   = Double.parseDouble(row[1]);
-            sumMap.merge(type, amt, Double::sum);
+        if (monthTable.length == 0) {
+            return new Double[CATEGORIES.length]; // 全部 null -> 调用侧可视同 0
         }
 
-        // 转二维数组
-        String[][] summary = new String[sumMap.size()][2];
-        int i = 0;
-        for (var e : sumMap.entrySet()) {
-            summary[i][0] = e.getKey();
-            summary[i][1] = String.valueOf(e.getValue());
-            i++;
+        /* 2. 汇总到 Map<type, total> */
+        Map<String, Double> sum = new HashMap<>();
+        for (String[] r : monthTable) {
+            sum.merge(r[2], Double.parseDouble(r[1]), Double::sum);
         }
-        Double[] values = new Double[summary.length];
-        for (int j = 0; j < summary.length; j++) {
-            values[j] = Double.parseDouble(summary[j][1]);
+
+        /* 3. 按固定顺序填值，缺失补 0 */
+        Double[] result = new Double[CATEGORIES.length];
+        for (int i = 0; i < CATEGORIES.length; i++) {
+            result[i] = sum.getOrDefault(CATEGORIES[i], 0.0);
         }
-        return values;
+        return result;
     }
 
 
