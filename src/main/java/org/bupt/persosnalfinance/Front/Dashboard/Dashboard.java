@@ -6,6 +6,7 @@ import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javafx.application.Platform;
 import org.bupt.persosnalfinance.Front.ManualEntry.ManualEntryManager;
@@ -45,6 +46,41 @@ public class Dashboard extends JFrame {
         add(mainPanel);
     }
 
+    public Map<String, Double> calculateMonthlyCategorySums() {
+        // 获取当前年月
+        Calendar cal = Calendar.getInstance();
+        int currentYear = cal.get(Calendar.YEAR);
+        int currentMonth = cal.get(Calendar.MONTH) + 1; // 月份从0开始，所以要加1
+
+        // 获取交易列表
+        TransactionInformation.loadFromJSON("src/main/data/transactionInformation.json");
+        List<TransactionInformation> transactions = TransactionInformation.transactionList;
+
+        // 按分类汇总金额
+        Map<String, Double> categorySums = transactions.stream()
+                .filter(t -> {
+                    try {
+                        // 解析交易日期
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                        Date transactionDate = sdf.parse(t.getDate());
+                        Calendar transactionCal = Calendar.getInstance();
+                        transactionCal.setTime(transactionDate);
+
+                        // 检查是否是当前年月
+                        return transactionCal.get(Calendar.YEAR) == currentYear
+                                && (transactionCal.get(Calendar.MONTH) + 1) == currentMonth;
+                    } catch (Exception e) {
+                        return false;
+                    }
+                })
+                .collect(Collectors.groupingBy(
+                        TransactionInformation::getType, // 按分类分组
+                        Collectors.summingDouble(TransactionInformation::getAmount) // 对金额求和
+                ));
+
+        return categorySums;
+    }
+
     private void initializeSampleData() {
         monthlyExpenses.put("Food", 1352.44);
         monthlyExpenses.put("Housing/Rent", 910.00);
@@ -60,6 +96,11 @@ public class Dashboard extends JFrame {
         monthlyExpenses.put("Others", 509.00);
 
         monthlyIncome = 10216.79;
+
+        Map<String, Double> monthlySums = calculateMonthlyCategorySums();
+        monthlySums.forEach((category, sum) -> {
+            System.out.println(category + ": " + sum);
+        });
     }
 
     private JPanel createHeaderPanel() {
@@ -71,7 +112,7 @@ public class Dashboard extends JFrame {
 
         JPanel RightTitle = new JPanel(new GridLayout(1, 2, 5,5));
         JButton RefreshBtn = new JButton("Refresh Table");
-        RefreshBtn.addActionListener(e -> refreshtable());
+        RefreshBtn.addActionListener(e -> refreshCenterPanel());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         JLabel dateLabel = new JLabel("Date: " + dateFormat.format(new Date()), SwingConstants.RIGHT);
@@ -82,15 +123,27 @@ public class Dashboard extends JFrame {
         return headerPanel;
     }
 
+    private JPanel centerPanel;
+
     private JPanel createCenterPanel() {
-        JPanel centerPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        centerPanel = new JPanel(new GridLayout(1, 2, 10, 10));
+        refreshCenterPanel(); // 首次加载内容
+        return centerPanel;
+    }
+
+    private void refreshCenterPanel() {
+        centerPanel.removeAll();
         centerPanel.add(createPieChartPanel());
         centerPanel.add(createSummaryPanel());
-        return centerPanel;
+        centerPanel.revalidate(); // 只有添加到 UI 后才需要
+        centerPanel.repaint();
     }
 
     private JPanel createPieChartPanel() {
         DefaultPieDataset dataset = new DefaultPieDataset();
+
+        initializeSampleData();
+
         for (Map.Entry<String, Double> entry : monthlyExpenses.entrySet()) {
             dataset.setValue(entry.getKey(), entry.getValue());
         }
@@ -117,6 +170,8 @@ public class Dashboard extends JFrame {
         JPanel summaryPanel = new JPanel(new BorderLayout(10, 10));
 
         JPanel topSummary = new JPanel(new GridLayout(1, 2, 10, 10));
+
+        initializeSampleData();
 
         JPanel expenditurePanel = new JPanel(new BorderLayout());
         expenditurePanel.add(new JLabel("Monthly Expenditure", SwingConstants.CENTER), BorderLayout.NORTH);
