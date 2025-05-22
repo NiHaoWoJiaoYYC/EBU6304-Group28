@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javafx.application.Platform;
 import org.bupt.persosnalfinance.Front.AlertFront.BudgetApp;
+import org.bupt.persosnalfinance.Front.HomePage.HomePage;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -181,7 +182,47 @@ public class Dashboard extends JFrame {
     }
 
     private void openHomePage() {
-        JOptionPane.showMessageDialog(this, "Are you sure you have saved your account book? After returning to the home page, it will not be saved.");
+        String[] options = {"Yes, Return Home", "Cancel"};
+
+        int choice = JOptionPane.showOptionDialog(
+                this,
+                "Are you sure you have saved your account book? After returning to the home page, it will not be saved.",
+                "Confirm Exit",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE,
+                null,
+                options,
+                options[1]
+        );
+
+        if (choice == 0) { // "Yes, Return Home" 被选中
+            // 关闭所有可见的窗口（包括 Dashboard 和其他子窗口）
+            closeAllWindows();
+
+            // 重新打开 HomePage
+            new HomePage().setVisible(true);
+        }
+        // 如果选择 "Cancel"，不做任何操作
+    }
+
+    /**
+     * 关闭所有可见的 JFrame 和 JDialog（除了当前进程的主窗口）
+     */
+    private void closeAllWindows() {
+        // 获取所有可见的 JFrame
+        for (Frame frame : Frame.getFrames()) {
+            if (frame.isVisible()) {
+                frame.dispose();
+            }
+        }
+
+        // 获取所有可见的 JDialog（如果有）
+        Window[] windows = Window.getWindows();
+        for (Window window : windows) {
+            if (window.isVisible()) {
+                window.dispose();
+            }
+        }
     }
 
     private void openTransactionList() {
