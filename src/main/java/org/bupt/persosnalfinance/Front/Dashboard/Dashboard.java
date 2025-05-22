@@ -1,15 +1,18 @@
 package org.bupt.persosnalfinance.Front.Dashboard;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 import javafx.application.Platform;
 import org.bupt.persosnalfinance.Front.AlertFront.BudgetApp;
 import org.bupt.persosnalfinance.Front.HomePage.HomePage;
+import org.bupt.persosnalfinance.dto.TransactionInformation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -24,11 +27,7 @@ public class Dashboard extends JFrame {
 
     private Map<String, Double> monthlyExpenses = new HashMap<>();
     private double monthlyIncome = 0;
-    private Object[][] recentTransactions = {
-            {"2025-03-19", "Food", "family dinner", -212.37},
-            {"2025-03-18", "Transportation", "Taxi", -72.91},
-            {"2025-03-18", "Food", "buy groceries", -34.20}
-    };
+    private DefaultTableModel tableModel;
 
     public Dashboard() {
         setTitle("Personal Finance Dashboard");
@@ -72,9 +71,15 @@ public class Dashboard extends JFrame {
         HomePageBtn.addActionListener(e -> openHomePage());
         headerPanel.add(HomePageBtn, BorderLayout.WEST);
 
+        JPanel RightTitle = new JPanel(new GridLayout(1, 2, 5,5));
+        JButton RefreshBtn = new JButton("Refresh Table");
+        RefreshBtn.addActionListener(e -> refreshtable());
+
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         JLabel dateLabel = new JLabel("Date: " + dateFormat.format(new Date()), SwingConstants.RIGHT);
-        headerPanel.add(dateLabel, BorderLayout.EAST);
+        RightTitle.add(RefreshBtn);
+        RightTitle.add(dateLabel);
+        headerPanel.add(RightTitle, BorderLayout.EAST);
 
         return headerPanel;
     }
@@ -134,9 +139,12 @@ public class Dashboard extends JFrame {
         topSummary.add(incomePanel);
         summaryPanel.add(topSummary, BorderLayout.NORTH);
 
-        String[] columnNames = {"Date", "Category", "Description", "Amount"};
-        JTable transactionTable = new JTable(recentTransactions, columnNames);
-        transactionTable.setEnabled(false);
+        TransactionInformation.loadFromJSON("src/main/data/transactionInformation.json");
+        String[] columnNames = {"Date", "Amount", "Type", "Object", "Remarks"};
+        tableModel = new DefaultTableModel(columnNames, 0);
+        refreshtable();
+
+        JTable transactionTable = new JTable(tableModel);
 
         JScrollPane scrollPane = new JScrollPane(transactionTable);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Recent Transactions"));
@@ -144,6 +152,26 @@ public class Dashboard extends JFrame {
         summaryPanel.add(scrollPane, BorderLayout.CENTER);
 
         return summaryPanel;
+    }
+
+    private void refreshtable() {
+        tableModel.setRowCount(0);
+        List<TransactionInformation> transactions = TransactionInformation.transactionList;
+
+        // Sort the transaction information in chronological order.
+        transactions.sort((t1, t2) -> {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
+                return sdf.parse(t2.getDate()).compareTo(sdf.parse(t1.getDate())); // Sort by date in chronological order.
+            } catch (Exception e) {
+                return 0;
+            }
+        });
+
+        for (int i = 0; i < transactions.size(); i++) {
+            TransactionInformation t = transactions.get(i);
+            tableModel.addRow(new Object[]{t.getDate(), String.format("$%.2f", t.getAmount()), t.getType(), t.getObject(), t.getRemarks()});
+        }
     }
 
     private JPanel createButtonPanel() {
