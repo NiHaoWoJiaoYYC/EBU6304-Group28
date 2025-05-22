@@ -1,4 +1,8 @@
+package org.bupt.persosnalfinance.Front;
 
+import org.bupt.persosnalfinance.dto.UserInfo;
+import org.bupt.persosnalfinance.Back.Service.BudgetAIService;
+import org.bupt.persosnalfinance.dto.SpendingRecord;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -14,7 +18,7 @@ import java.util.Map;
 public class FullBudgetPlannerApp {
     private JFrame frame;
     private JTextArea suggestionArea;
-    private JPanel centerPanel; // 表格/图表 切换容器
+    private JPanel centerPanel;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> new FullBudgetPlannerApp().createAndShow());
@@ -26,10 +30,8 @@ public class FullBudgetPlannerApp {
         frame.setSize(1000, 650);
         frame.setLayout(new BorderLayout(5,5));
 
-        // 左侧：用户输入 + 按钮
         frame.add(createInputPanel(), BorderLayout.WEST);
 
-        // 中部：表格 + 图表 + 建议
         centerPanel = new JPanel(new BorderLayout());
         frame.add(centerPanel, BorderLayout.CENTER);
 
@@ -42,9 +44,8 @@ public class FullBudgetPlannerApp {
     }
 
     private JPanel createInputPanel() {
-        JPanel p = new JPanel();
+        JPanel p = new JPanel(new GridLayout(0,2,5,5));
         p.setBorder(BorderFactory.createTitledBorder("User Information"));
-        p.setLayout(new GridLayout(0,2,5,5));
 
         JTextField occ = new JTextField();
         JTextField inc = new JTextField();
@@ -54,30 +55,28 @@ public class FullBudgetPlannerApp {
         JCheckBox chPartner = new JCheckBox();
         JCheckBox chPets = new JCheckBox();
 
-        p.add(new JLabel("Occupation:")); p.add(occ);
-        p.add(new JLabel("Disposable Income:")); p.add(inc);
-        p.add(new JLabel("City:")); p.add(city);
+        p.add(new JLabel("Occupation:"));             p.add(occ);
+        p.add(new JLabel("Disposable Income:"));     p.add(inc);
+        p.add(new JLabel("City:"));                  p.add(city);
         p.add(new JLabel("Number of Elderly to Support:")); p.add(eld);
         p.add(new JLabel("Number of Children to Support:")); p.add(chi);
-        p.add(new JLabel("Have a Partner:")); p.add(chPartner);
-        p.add(new JLabel("Have Pets:")); p.add(chPets);
+        p.add(new JLabel("Have a Partner:"));        p.add(chPartner);
+        p.add(new JLabel("Have Pets:"));             p.add(chPets);
 
         JButton btn = new JButton("Generate Budget");
         btn.addActionListener((ActionEvent e) -> onGenerate(
-                occ.getText(),
-                inc.getText(),
-                city.getText(),
-                eld.getText(),
-                chi.getText(),
-                chPartner.isSelected(),
-                chPets.isSelected()
+                occ.getText(), inc.getText(), city.getText(),
+                eld.getText(), chi.getText(),
+                chPartner.isSelected(), chPets.isSelected()
         ));
         p.add(btn);
+
         return p;
     }
 
-    private void onGenerate(String occ, String inc, String city, String eld, String chi, boolean ptn, boolean pts) {
-        // 1. 构造 UserInfo
+    private void onGenerate(String occ, String inc, String city,
+                            String eld, String chi,
+                            boolean ptn, boolean pts) {
         UserInfo user = new UserInfo();
         user.setOccupation(occ);
         user.setDisposableIncome(Double.parseDouble(inc));
@@ -87,49 +86,40 @@ public class FullBudgetPlannerApp {
         user.setHasPartner(ptn);
         user.setHasPets(pts);
 
-        // 2. AI 预算 + 本月实际支出
         Map<String, Double> aiMap = BudgetAIService.generateBudget(user);
-        Map<String, Double> actualMap = BudgetAIService.getActualSpendingFromJson(
-                "src/main/data/transactionInformation.json"
-        );
+        Map<String, Double> actualMap =
+                BudgetAIService.getActualSpendingFromJson("src/main/data/transactionInformation.json");
 
-        // 3. 表格面板
-        List<SpendingRecord> recs = SpendingRecord.createFromMaps(actualMap, aiMap);
+        List<SpendingRecord> recs =
+                SpendingRecord.createFromMaps(actualMap, aiMap);
         SpendingTablePanel tablePanel = new SpendingTablePanel(recs);
 
-        // 4. 柱状图面板
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-        for(SpendingRecord r : recs) {
+        for (SpendingRecord r : recs) {
             dataset.addValue(r.getActualSpending(), "Actual", r.getCategory());
-            dataset.addValue(r.getAiBudget(), "AI", r.getCategory());
+            dataset.addValue(r.getAiBudget(),      "AI",     r.getCategory());
         }
         JFreeChart chart = ChartFactory.createBarChart(
-                "Actual vs AI Budget",
-                "Category",
-                "Amount (¥)",
-                dataset
+                "Actual vs AI Budget", "Category", "Amount (¥)", dataset
         );
         ChartPanel chartP = new ChartPanel(chart);
 
-        // 切换到 表格+图表
         centerPanel.removeAll();
         JSplitPane split = new JSplitPane(
                 JSplitPane.VERTICAL_SPLIT,
-                tablePanel,
-                chartP
+                tablePanel, chartP
         );
         split.setDividerLocation(200);
         centerPanel.add(split, BorderLayout.CENTER);
         centerPanel.revalidate();
         centerPanel.repaint();
 
-        // 5. 整体节省建议
-        double totalActual = actualMap.values().stream().mapToDouble(Double::doubleValue).sum();
-        double totalAIBud  = aiMap.values().stream().mapToDouble(Double::doubleValue).sum();
-        double diff = totalAIBud - totalActual;
-        suggestionArea.setText(String.format("本月预算结余 ¥%.2f，可%s！",
-                diff,
-                diff>=0 ? "考虑储蓄或投资" : "注意控制开支"
+        double totalAct = actualMap.values().stream().mapToDouble(Double::doubleValue).sum();
+        double totalAI  = aiMap.values().stream().mapToDouble(Double::doubleValue).sum();
+        double diff = totalAI - totalAct;
+        suggestionArea.setText(String.format(
+                "本月预算结余 ¥%.2f，可%s！",
+                diff, diff >= 0 ? "考虑储蓄或投资" : "注意控制开支"
         ));
     }
 }

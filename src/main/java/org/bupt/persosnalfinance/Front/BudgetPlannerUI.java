@@ -1,4 +1,8 @@
+package org.bupt.persosnalfinance.Front;
 
+import org.bupt.persosnalfinance.dto.UserInfo;
+import org.bupt.persosnalfinance.Back.Service.BudgetAIService;
+import org.bupt.persosnalfinance.dto.SpendingRecord;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,27 +19,16 @@ public class BudgetPlannerUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(800, 600);
 
-        // 模拟用户信息输入（你可以改成表单）
-        UserInfo user = new UserInfo(
-                "student",
-                5000,
-                "Beijing",
-                0,
-                0,
-                false,
-                false
-        );
+        // 模拟用户信息输入
+        UserInfo user = new UserInfo("student", 5000, "Beijing", 0, 0, false, false);
 
-        // AI预算数据
         Map<String, Double> aiBudget = BudgetAIService.generateBudget(user);
+        Map<String, Double> actualSpending =
+                BudgetAIService.getActualSpendingFromJson("src/main/data/transactionInformation.json");
 
-        // 实际消费数据
-        Map<String, Double> actualSpending = BudgetAIService.getActualSpendingFromJson("src/main/data/transactionInformation.json");
+        List<SpendingRecord> records =
+                SpendingRecord.createFromMaps(actualSpending, aiBudget);
 
-        // 构造表格数据
-        List<SpendingRecord> records = SpendingRecord.createFromMaps(actualSpending, aiBudget);
-
-        // 显示表格
         SpendingTablePanel tablePanel = new SpendingTablePanel(records);
         frame.add(tablePanel);
 
