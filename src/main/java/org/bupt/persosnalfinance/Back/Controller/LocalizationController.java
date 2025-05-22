@@ -32,13 +32,18 @@ public class LocalizationController {
     }
 
     /** 修改节假日名称（API 或自定义都支持），即时生效 */
-    public void editHolidayName(HolidayDTO dto, String newName) {
+    public void updateHolidayName(HolidayDTO dto, String newName) {
         holidayService.updateHolidayName(dto, newName);
     }
 
     /** 删除一条假期（API 或自定义都支持） */
-    public void deleteHoliday(HolidayDTO dto) {
+    public void removeHoliday(HolidayDTO dto) {
         holidayService.removeHoliday(dto);
+    }
+
+    /** 修改节假日日期区间（API 或自定义都支持），即时生效 */
+    public void updateHolidayDates(HolidayDTO dto, LocalDate start, LocalDate end) {
+        holidayService.updateHolidayDates(dto, start, end);
     }
 
     /** 为某个假期添加预算 */

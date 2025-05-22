@@ -5,14 +5,17 @@ import org.bupt.persosnalfinance.dto.HolidayDTO;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
-import java.time.*;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.function.BiConsumer;
 
 /**
  * HolidayPanel: allows selection and filtering of holidays, with edit/delete functionality.
  * Displays only holiday names in English and includes persistent custom holidays.
+ * Validates that end date is not before start date.
  */
 public class HolidayPanel extends JPanel {
     private LocalizationController controller;
@@ -23,18 +26,20 @@ public class HolidayPanel extends JPanel {
 
     private final JSpinner             fromDateSpinner;
     private final JSpinner             toDateSpinner;
+    private final JLabel               lblError         = new JLabel(" "); // error message
+
     private BiConsumer<LocalDate, LocalDate> onDateRangeChanged;
 
     public HolidayPanel() {
         super(new BorderLayout(8, 8));
         setBorder(BorderFactory.createTitledBorder("Holiday Filter"));
 
-        // Renderer: only show the holiday name
+        // Combo renderer: only show name
         holidayCombo.setRenderer(new BasicComboBoxRenderer() {
             @Override
-            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
-                                                          boolean isSelected, boolean cellHasFocus) {
-                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+            public Component getListCellRendererComponent(JList<?> list, Object value, int idx,
+                                                          boolean sel, boolean focus) {
+                super.getListCellRendererComponent(list, value, idx, sel, focus);
                 if (value instanceof HolidayDTO) {
                     setText(((HolidayDTO) value).getName());
                 }
@@ -42,7 +47,7 @@ public class HolidayPanel extends JPanel {
             }
         });
 
-        // Top: holiday selector + buttons
+        // Top: selector + buttons
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
         top.add(new JLabel("Holiday:"));
         top.add(holidayCombo);
@@ -50,22 +55,40 @@ public class HolidayPanel extends JPanel {
         top.add(btnDeleteHoliday);
         add(top, BorderLayout.NORTH);
 
-        // Date range selectors
+        // Date range panel + error label below
         JPanel range = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
         fromDateSpinner = new JSpinner(new SpinnerDateModel(new Date(), null, null, java.util.Calendar.DAY_OF_MONTH));
         fromDateSpinner.setEditor(new JSpinner.DateEditor(fromDateSpinner, "yyyy-MM-dd"));
         toDateSpinner   = new JSpinner(new SpinnerDateModel(new Date(), null, null, java.util.Calendar.DAY_OF_MONTH));
         toDateSpinner.setEditor(new JSpinner.DateEditor(toDateSpinner, "yyyy-MM-dd"));
+
         range.add(new JLabel("Start:"));
         range.add(fromDateSpinner);
         range.add(new JLabel("End:"));
         range.add(toDateSpinner);
+        range.add(lblError);
+        lblError.setForeground(Color.RED);
+
         add(range, BorderLayout.CENTER);
 
-        // Listeners
-        holidayCombo.addActionListener(e -> onHolidaySelected());
-        fromDateSpinner.addChangeListener(e -> triggerDateRangeChanged());
-        toDateSpinner.addChangeListener(e -> triggerDateRangeChanged());
+        // Common listener to validate dates and then notify/change
+        ChangeListener validateAndNotify = e -> {
+            boolean valid = validateDates();
+            if (valid) {
+                // clear error
+                lblError.setText(" ");
+                toDateSpinner.getEditor().getComponent(0).setBackground(Color.WHITE);
+                fromDateSpinner.getEditor().getComponent(0).setBackground(Color.WHITE);
+                onDatesChanged();
+            }
+        };
+
+        holidayCombo.addActionListener(e -> {
+            populateSpinnersWithSelectedHoliday();
+            validateAndNotify.stateChanged(null);
+        });
+        fromDateSpinner.addChangeListener(validateAndNotify);
+        toDateSpinner.addChangeListener(validateAndNotify);
 
         btnEditHoliday.addActionListener(e -> {
             HolidayDTO sel = (HolidayDTO) holidayCombo.getSelectedItem();
@@ -75,7 +98,7 @@ public class HolidayPanel extends JPanel {
             }
             String input = JOptionPane.showInputDialog(this, "Enter new holiday name:", sel.getName());
             if (input != null && !input.isBlank()) {
-                controller.editHolidayName(sel, input.trim());
+                controller.updateHolidayName(sel, input.trim());
                 reloadHolidays();
             }
         });
@@ -93,23 +116,19 @@ public class HolidayPanel extends JPanel {
                 JOptionPane.YES_NO_OPTION
             );
             if (choice == JOptionPane.YES_OPTION) {
-                controller.deleteHoliday(sel);
+                controller.removeHoliday(sel);
                 reloadHolidays();
             }
         });
     }
 
-    /**
-     * Injects the controller and loads holidays.
-     */
+    /** Inject controller and load */
     public void setController(LocalizationController controller) {
         this.controller = controller;
         reloadHolidays();
     }
 
-    /**
-     * Reloads the holiday combo with all API and custom holidays.
-     */
+    /** Reload combo and select first */
     private void reloadHolidays() {
         holidayCombo.removeAllItems();
         for (HolidayDTO h : controller.getAllHolidays()) {
@@ -117,50 +136,62 @@ public class HolidayPanel extends JPanel {
         }
         if (holidayCombo.getItemCount() > 0) {
             holidayCombo.setSelectedIndex(0);
-            onHolidaySelected();
         }
     }
 
-    /**
-     * Called when a holiday is selected: update spinners to that holiday's dates and notify.
-     */
-    private void onHolidaySelected() {
+    /** Populate spinners from selected holiday */
+    private void populateSpinnersWithSelectedHoliday() {
         HolidayDTO sel = (HolidayDTO) holidayCombo.getSelectedItem();
-        if (sel != null) {
-            // Convert LocalDate to Date for spinner
-            ZoneId zone = ZoneId.systemDefault();
-            Date start = Date.from(sel.getStartDate().atStartOfDay(zone).toInstant());
-            Date end   = Date.from(sel.getEndDate().atStartOfDay(zone).toInstant());
-            fromDateSpinner.setValue(start);
-            toDateSpinner.setValue(end);
-        }
-        triggerDateRangeChanged();
+        if (sel == null) return;
+        ZoneId zone = ZoneId.systemDefault();
+        Date start = Date.from(sel.getStartDate().atStartOfDay(zone).toInstant());
+        Date end   = Date.from(sel.getEndDate().atStartOfDay(zone).toInstant());
+        fromDateSpinner.setValue(start);
+        toDateSpinner.setValue(end);
     }
 
-    /**
-     * Sets the callback invoked when the selected holiday or date range changes.
-     */
-    public void setOnDateRangeChanged(BiConsumer<LocalDate, LocalDate> callback) {
-        this.onDateRangeChanged = callback;
-    }
-
-    /**
-     * Notifies the callback of the current date range.
-     */
-    private void triggerDateRangeChanged() {
-        if (onDateRangeChanged == null) return;
+    /** Validate that end >= start; if not, mark red and show error */
+    private boolean validateDates() {
         LocalDate from = ((Date) fromDateSpinner.getValue())
             .toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         LocalDate to   = ((Date) toDateSpinner.getValue())
             .toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        onDateRangeChanged.accept(from, to);
+        if (to.isBefore(from)) {
+            lblError.setText("End date cannot be before start date");
+            toDateSpinner.getEditor().getComponent(0).setBackground(Color.PINK);
+            fromDateSpinner.getEditor().getComponent(0).setBackground(Color.PINK);
+            return false;
+        }
+        return true;
     }
 
-    /**
-     * Returns the currently selected holiday ID.
-     */
+    /** Called when dates are valid and changed: update backend and notify parent */
+    private void onDatesChanged() {
+        HolidayDTO sel = (HolidayDTO) holidayCombo.getSelectedItem();
+        if (sel == null) return;
+        LocalDate from = ((Date) fromDateSpinner.getValue())
+            .toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate to   = ((Date) toDateSpinner.getValue())
+            .toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+        // update service
+        controller.updateHolidayDates(sel, from, to);
+
+        // propagate to CombinedUI / PlanPanel
+        if (onDateRangeChanged != null) {
+            onDateRangeChanged.accept(from, to);
+        }
+    }
+
+    /** Set callback for outside */
+    public void setOnDateRangeChanged(BiConsumer<LocalDate, LocalDate> callback) {
+        this.onDateRangeChanged = callback;
+    }
+
+    /** Get selected holiday ID */
     public Integer getSelectedHolidayId() {
         HolidayDTO sel = (HolidayDTO) holidayCombo.getSelectedItem();
         return sel != null ? sel.getId() : null;
     }
 }
+
