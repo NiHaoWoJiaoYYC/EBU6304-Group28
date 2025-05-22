@@ -1,164 +1,166 @@
 package org.bupt.persosnalfinance.Front.Localization;
 
-import org.bupt.persosnalfinance.dto.HolidayDTO;
 import org.bupt.persosnalfinance.Back.Controller.LocalizationController;
+import org.bupt.persosnalfinance.dto.HolidayDTO;
 
 import javax.swing.*;
-import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import java.awt.*;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.List;
+import java.time.*;
+import java.util.Date;
 import java.util.function.BiConsumer;
 
 /**
- * HolidayPanel：假期选择与日期管理面板，支持通过 Controller 获取数据、更新并验证日期逻辑。
+ * HolidayPanel: allows selection and filtering of holidays, with edit/delete functionality.
+ * Displays only holiday names in English and includes persistent custom holidays.
  */
 public class HolidayPanel extends JPanel {
     private LocalizationController controller;
-    private final JComboBox<String> holidayCombo;
-    private final JSpinner startSpinner;
-    private final JSpinner endSpinner;
-    private final JLabel daysLeftLabel;
-    private List<HolidayDTO> holidays = Collections.emptyList();
+
+    private final JComboBox<HolidayDTO> holidayCombo    = new JComboBox<>();
+    private final JButton              btnEditHoliday   = new JButton("Edit Holiday");
+    private final JButton              btnDeleteHoliday = new JButton("Delete Holiday");
+
+    private final JSpinner             fromDateSpinner;
+    private final JSpinner             toDateSpinner;
     private BiConsumer<LocalDate, LocalDate> onDateRangeChanged;
 
     public HolidayPanel() {
         super(new BorderLayout(8, 8));
-        setBorder(BorderFactory.createTitledBorder("Holiday Selector"));
+        setBorder(BorderFactory.createTitledBorder("Holiday Filter"));
 
-        // 西侧：假期下拉 + 自定义按钮
-        holidayCombo = new JComboBox<>();
-        JButton addBtn = new JButton("Add Custom");
-        addBtn.addActionListener(e -> {
-            String name = JOptionPane.showInputDialog(this, "Holiday name:");
-            if (name != null && !name.trim().isEmpty()) {
-                controller.addCustomHoliday(name.trim());
-                loadHolidays();
-                holidayCombo.setSelectedItem(name.trim());
+        // Renderer: only show the holiday name
+        holidayCombo.setRenderer(new BasicComboBoxRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value, int index,
+                                                          boolean isSelected, boolean cellHasFocus) {
+                super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (value instanceof HolidayDTO) {
+                    setText(((HolidayDTO) value).getName());
+                }
+                return this;
             }
         });
-        JPanel west = new JPanel(new BorderLayout(4, 4));
-        west.add(holidayCombo, BorderLayout.CENTER);
-        west.add(addBtn, BorderLayout.SOUTH);
-        add(west, BorderLayout.WEST);
 
-        // 中部：日期范围 & 倒计时
-        JPanel center = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 8));
-        startSpinner = new JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH));
-        startSpinner.setEditor(new JSpinner.DateEditor(startSpinner, "yyyy-MM-dd"));
-        endSpinner   = new JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH));
-        endSpinner  .setEditor(new JSpinner.DateEditor(endSpinner,   "yyyy-MM-dd"));
-        daysLeftLabel = new JLabel("0");
+        // Top: holiday selector + buttons
+        JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
+        top.add(new JLabel("Holiday:"));
+        top.add(holidayCombo);
+        top.add(btnEditHoliday);
+        top.add(btnDeleteHoliday);
+        add(top, BorderLayout.NORTH);
 
-        center.add(new JLabel("From:")); center.add(startSpinner);
-        center.add(new JLabel("To:"));   center.add(endSpinner);
-        center.add(new JLabel("Days left:")); center.add(daysLeftLabel);
-        add(center, BorderLayout.CENTER);
+        // Date range selectors
+        JPanel range = new JPanel(new FlowLayout(FlowLayout.LEFT, 6, 6));
+        fromDateSpinner = new JSpinner(new SpinnerDateModel(new Date(), null, null, java.util.Calendar.DAY_OF_MONTH));
+        fromDateSpinner.setEditor(new JSpinner.DateEditor(fromDateSpinner, "yyyy-MM-dd"));
+        toDateSpinner   = new JSpinner(new SpinnerDateModel(new Date(), null, null, java.util.Calendar.DAY_OF_MONTH));
+        toDateSpinner.setEditor(new JSpinner.DateEditor(toDateSpinner, "yyyy-MM-dd"));
+        range.add(new JLabel("Start:"));
+        range.add(fromDateSpinner);
+        range.add(new JLabel("End:"));
+        range.add(toDateSpinner);
+        add(range, BorderLayout.CENTER);
 
-        // 事件绑定
-        holidayCombo.addActionListener(e -> applySelectedHoliday());
-        ChangeListener dateListener = e -> notifyDateChanged();
-        startSpinner.addChangeListener(dateListener);
-        endSpinner  .addChangeListener(dateListener);
+        // Listeners
+        holidayCombo.addActionListener(e -> onHolidaySelected());
+        fromDateSpinner.addChangeListener(e -> triggerDateRangeChanged());
+        toDateSpinner.addChangeListener(e -> triggerDateRangeChanged());
+
+        btnEditHoliday.addActionListener(e -> {
+            HolidayDTO sel = (HolidayDTO) holidayCombo.getSelectedItem();
+            if (sel == null) {
+                JOptionPane.showMessageDialog(this, "Please select a holiday first.");
+                return;
+            }
+            String input = JOptionPane.showInputDialog(this, "Enter new holiday name:", sel.getName());
+            if (input != null && !input.isBlank()) {
+                controller.editHolidayName(sel, input.trim());
+                reloadHolidays();
+            }
+        });
+
+        btnDeleteHoliday.addActionListener(e -> {
+            HolidayDTO sel = (HolidayDTO) holidayCombo.getSelectedItem();
+            if (sel == null) {
+                JOptionPane.showMessageDialog(this, "Please select a holiday first.");
+                return;
+            }
+            int choice = JOptionPane.showConfirmDialog(
+                this,
+                "Are you sure you want to delete holiday \"" + sel.getName() + "\"?",
+                "Confirm Delete",
+                JOptionPane.YES_NO_OPTION
+            );
+            if (choice == JOptionPane.YES_OPTION) {
+                controller.deleteHoliday(sel);
+                reloadHolidays();
+            }
+        });
     }
 
     /**
-     * 注入 Controller 并初始化数据
+     * Injects the controller and loads holidays.
      */
     public void setController(LocalizationController controller) {
         this.controller = controller;
-        loadHolidays();
-    }
-
-    private void loadHolidays() {
-        holidays = controller.getAllHolidays();
-        holidayCombo.removeAllItems();
-        for (HolidayDTO h : holidays) {
-            holidayCombo.addItem(h.getName());
-        }
-        if (!holidays.isEmpty()) {
-            holidayCombo.setSelectedIndex(0);
-            applySelectedHoliday();
-        }
-    }
-
-    private void applySelectedHoliday() {
-        String name = (String) holidayCombo.getSelectedItem();
-        if (name == null) return;
-        for (HolidayDTO dto : holidays) {
-            if (name.equals(dto.getName())) {
-                Date ds = Date.from(dto.getStartDate().atStartOfDay(ZoneId.systemDefault()).toInstant());
-                Date de = Date.from(dto.getEndDate()  .atStartOfDay(ZoneId.systemDefault()).toInstant());
-                startSpinner.setValue(ds);
-                endSpinner  .setValue(de);
-                notifyDateChanged();
-                break;
-            }
-        }
-    }
-
-    private void notifyDateChanged() {
-        String name = (String) holidayCombo.getSelectedItem();
-        HolidayDTO dto = holidays.stream()
-                .filter(h -> h.getName().equals(name))
-                .findFirst().orElse(null);
-        if (dto == null) return;
-
-        LocalDate start = ((Date) startSpinner.getValue())
-                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate end   = ((Date) endSpinner.getValue())
-                .toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-        // 验证日期逻辑
-        JFormattedTextField fStart = ((JSpinner.DefaultEditor) startSpinner.getEditor()).getTextField();
-        JFormattedTextField fEnd   = ((JSpinner.DefaultEditor) endSpinner.getEditor()).getTextField();
-        if (end.isBefore(start)) {
-            fStart.setBackground(Color.PINK);
-            fEnd  .setBackground(Color.PINK);
-            daysLeftLabel.setText("End date must be after start");
-            daysLeftLabel.setForeground(Color.RED);
-            return;
-        } else {
-            fStart.setBackground(Color.WHITE);
-            fEnd  .setBackground(Color.WHITE);
-        }
-
-        long daysLeft = Math.max(0, ChronoUnit.DAYS.between(LocalDate.now(), start));
-        daysLeftLabel.setText(String.valueOf(daysLeft));
-        daysLeftLabel.setForeground(Color.BLACK);
-
-        // 更新服务
-        controller.updateHolidayDates(dto, start, end);
-
-        // 回调通知
-        if (onDateRangeChanged != null) {
-            onDateRangeChanged.accept(start, end);
-        }
+        reloadHolidays();
     }
 
     /**
-     * 外部注册：当日期范围或假期选择改变时触发
+     * Reloads the holiday combo with all API and custom holidays.
      */
-    public void setOnDateRangeChanged(BiConsumer<LocalDate, LocalDate> listener) {
-        this.onDateRangeChanged = listener;
+    private void reloadHolidays() {
+        holidayCombo.removeAllItems();
+        for (HolidayDTO h : controller.getAllHolidays()) {
+            holidayCombo.addItem(h);
+        }
+        if (holidayCombo.getItemCount() > 0) {
+            holidayCombo.setSelectedIndex(0);
+            onHolidaySelected();
+        }
     }
 
     /**
-     * 获取当前选中假期的 ID
+     * Called when a holiday is selected: update spinners to that holiday's dates and notify.
+     */
+    private void onHolidaySelected() {
+        HolidayDTO sel = (HolidayDTO) holidayCombo.getSelectedItem();
+        if (sel != null) {
+            // Convert LocalDate to Date for spinner
+            ZoneId zone = ZoneId.systemDefault();
+            Date start = Date.from(sel.getStartDate().atStartOfDay(zone).toInstant());
+            Date end   = Date.from(sel.getEndDate().atStartOfDay(zone).toInstant());
+            fromDateSpinner.setValue(start);
+            toDateSpinner.setValue(end);
+        }
+        triggerDateRangeChanged();
+    }
+
+    /**
+     * Sets the callback invoked when the selected holiday or date range changes.
+     */
+    public void setOnDateRangeChanged(BiConsumer<LocalDate, LocalDate> callback) {
+        this.onDateRangeChanged = callback;
+    }
+
+    /**
+     * Notifies the callback of the current date range.
+     */
+    private void triggerDateRangeChanged() {
+        if (onDateRangeChanged == null) return;
+        LocalDate from = ((Date) fromDateSpinner.getValue())
+            .toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate to   = ((Date) toDateSpinner.getValue())
+            .toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        onDateRangeChanged.accept(from, to);
+    }
+
+    /**
+     * Returns the currently selected holiday ID.
      */
     public Integer getSelectedHolidayId() {
-        String name = (String) holidayCombo.getSelectedItem();
-        if (holidays == null || holidays.isEmpty()) {
-            return holidayCombo.getSelectedIndex();
-        }
-        for (HolidayDTO dto : holidays) {
-            if (dto.getName().equals(name)) {
-                return dto.getId() != null ? dto.getId() : holidays.indexOf(dto);
-            }
-        }
-        return holidayCombo.getSelectedIndex();
+        HolidayDTO sel = (HolidayDTO) holidayCombo.getSelectedItem();
+        return sel != null ? sel.getId() : null;
     }
 }

@@ -13,11 +13,8 @@ import java.awt.*;
 import java.text.NumberFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
 
 /**
  * PlanPanel 支持按 Holiday ID 分组显示和添加预算记录，切换 Holiday 时具有记忆性。
@@ -25,13 +22,12 @@ import java.util.Map;
  */
 public class PlanPanel extends JPanel {
     private LocalizationController controller;
+    private Integer currentHolidayId;
+
     private final DefaultTableModel model;
     private final JTable table;
     private final DefaultPieDataset<String> dataset;
-    
-    // 当前所属的节假日ID
-    private Integer currentHolidayId;
-    
+
     // 添加记录的输入组件
     private final JSpinner dateSpinner;
     private final JComboBox<String> categoryCombo;
@@ -89,18 +85,15 @@ public class PlanPanel extends JPanel {
     }
 
     /**
-     * 注入 Controller 并初始化数据
+     * 注入 Controller，并触发第一次刷新（需在 CombinedUI 中调用）
      */
     public void setController(LocalizationController controller) {
         this.controller = controller;
-        // 加载并展示当前 holidayId 对应的数据
-        if (currentHolidayId != null) {
-            refresh();
-        }
+        // initial display—CombinedUI 应该在节假日选择后调用 setHolidayId(...)
     }
 
     /**
-     * 设置当前节假日ID并刷新显示（保留该节假日上次的输入记录）。
+     * 设置当前节假日ID并刷新显示（CombinedUI 切换假期时调用）
      */
     public void setHolidayId(Integer holidayId) {
         this.currentHolidayId = holidayId;
@@ -108,7 +101,7 @@ public class PlanPanel extends JPanel {
     }
 
     /**
-     * 添加记录：会关联 currentHolidayId，一旦切换回该节假日可见。
+     * 添加记录：关联 currentHolidayId
      */
     private void onAdd() {
         if (controller == null || currentHolidayId == null) {
@@ -124,8 +117,7 @@ public class PlanPanel extends JPanel {
             if (num == null || num.doubleValue() <= 0) {
                 throw new IllegalArgumentException("Amount must be > 0");
             }
-            double amt = num.doubleValue();
-            controller.addPlan(currentHolidayId, ld, cat, pay, amt);
+            controller.addPlan(currentHolidayId, ld, cat, pay, num.doubleValue());
             clearInputs();
             refresh();
         } catch (Exception ex) {
@@ -134,7 +126,7 @@ public class PlanPanel extends JPanel {
     }
 
     /**
-     * 删除选中行记录。
+     * 删除选中行记录
      */
     private void onDelete() {
         if (controller == null || currentHolidayId == null) {
@@ -146,9 +138,16 @@ public class PlanPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Please select at least one row to delete.", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        // 获取当前节假日的计划列表
+        int choice = JOptionPane.showConfirmDialog(
+            this,
+            "Confirm delete " + rows.length + " selected record(s)?",
+            "Delete Confirmation",
+            JOptionPane.YES_NO_OPTION
+        );
+        if (choice != JOptionPane.YES_OPTION) {
+            return;
+        }
         List<PlanDTO> list = controller.getPlansForHoliday(currentHolidayId);
-        // 按选中逆序删除
         for (int i = rows.length - 1; i >= 0; i--) {
             controller.removePlan(list.get(rows[i]).getId());
         }
@@ -156,7 +155,7 @@ public class PlanPanel extends JPanel {
     }
 
     /**
-     * 刷新当前节假日的预算列表与饼图。
+     * 刷新表格与饼图
      */
     private void refresh() {
         model.setRowCount(0);
@@ -175,6 +174,9 @@ public class PlanPanel extends JPanel {
         }
     }
 
+    /**
+     * 清空输入控件
+     */
     private void clearInputs() {
         dateSpinner.setValue(new Date());
         categoryCombo.setSelectedIndex(0);
@@ -182,5 +184,3 @@ public class PlanPanel extends JPanel {
         amountField.setValue(null);
     }
 }
-
-
