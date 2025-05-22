@@ -13,6 +13,7 @@ import org.jfree.data.general.DefaultPieDataset;
 
 import org.bupt.persosnalfinance.Front.ManualEntry.ManualEntryManager;
 import org.bupt.persosnalfinance.Front.ManualEntry.TransactionListManager;
+import org.bupt.persosnalfinance.Front.AIBudgetPlanner.FullBudgetPlannerManager;
 
 public class Dashboard extends JFrame {
 
@@ -200,8 +201,7 @@ public class Dashboard extends JFrame {
     }
 
     private void openAIBudgetPlanning() {
-        JOptionPane.showMessageDialog(this, "Opening AI Personalized Budget Planning");
-    }
+        FullBudgetPlannerManager.showBudgetPlanner();}
 
 //    private void openAIBudgetAlerts() {
 //        JOptionPane.showMessageDialog(this, "Opening AI Budget Progress Alerts");
