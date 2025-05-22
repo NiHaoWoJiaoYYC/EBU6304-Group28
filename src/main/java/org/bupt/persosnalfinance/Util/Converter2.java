@@ -6,9 +6,13 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class Converter {
+/**
+ * JSON ↔ 表格转换工具
+ */
+public class Converter2 {
+
     /* ---------------------------------------------------------------- */
-    /* ① 整表转换方法（保留）                                           */
+    /* ① 整表转换方法                                                   */
     /* ---------------------------------------------------------------- */
     public static String[][] jsonToTable(String jsonPath) {
         TransactionInformation.loadFromJSON(jsonPath);
@@ -38,7 +42,6 @@ public class Converter {
         DateTimeFormatter srcFmt = DateTimeFormatter.ofPattern("yyyy/M/d");
         DateTimeFormatter keyFmt = DateTimeFormatter.ofPattern("yyyy-MM");
 
-        /* 使用 TreeMap 先按日期排序，再分月 */
         Map<String, List<TransactionInformation>> grouped = new LinkedHashMap<>();
 
         list.stream()
@@ -46,11 +49,10 @@ public class Converter {
                         LocalDate.parse(t.getDate(), srcFmt)))
                 .forEach(t -> {
                     LocalDate d = LocalDate.parse(t.getDate(), srcFmt);
-                    String key = d.format(keyFmt);      // 2024-02
+                    String key = d.format(keyFmt);        // e.g. 2024-02
                     grouped.computeIfAbsent(key, k -> new ArrayList<>()).add(t);
                 });
 
-        /* 转二维数组 */
         Map<String, String[][]> result = new LinkedHashMap<>();
         for (var e : grouped.entrySet()) {
             List<TransactionInformation> rows = e.getValue();
@@ -69,15 +71,48 @@ public class Converter {
     }
 
     /**
-     * 读取 JSON 并仅返回指定月份 (yyyy-MM) 的二维数组。
-     * 若该月份不存在交易记录，返回空数组。
+     * 返回指定月份的完整二维表
      */
     public static String[][] jsonToMonthTable(String jsonPath, String monthKey) {
-
-        /* 先调用已存在的分表方法，避免重复代码 */
-        Map<String, String[][]> byMonth = jsonToMonthlyTables(jsonPath);
-
-        return byMonth.getOrDefault(monthKey, new String[0][0]);
+        return jsonToMonthlyTables(jsonPath)
+                .getOrDefault(monthKey, new String[0][0]);
     }
+
+    /* ---------------------------------------------------------------- */
+    /* ③ 指定月份 -> 固定顺序类别金额数组                               */
+    /* ---------------------------------------------------------------- */
+    /**
+     * @param jsonPath JSON 文件路径
+     * @param monthKey yyyy-MM 形式（例: 2024-02）
+     * @return Double[12]（或你分类数），顺序见 CATEGORIES；无记录处为 0.0
+     */
+    public static Double[] monthTypeSummary(String jsonPath, String monthKey) {
+
+        final String[] CATEGORIES = {
+                "Food", "Housing/Rent", "Daily Necessities", "Transportation",
+                "Entertainment", "Shopping", "Healthcare", "Education",
+                "Childcare", "Gifts", "Savings", "Others"
+        };
+
+        /* 1. 读取指定月份明细 */
+        String[][] monthTable = jsonToMonthTable(jsonPath, monthKey);
+        if (monthTable.length == 0) {
+            return new Double[CATEGORIES.length]; // 全部 null -> 调用侧可视同 0
+        }
+
+        /* 2. 汇总到 Map<type, total> */
+        Map<String, Double> sum = new HashMap<>();
+        for (String[] r : monthTable) {
+            sum.merge(r[2], Double.parseDouble(r[1]), Double::sum);
+        }
+
+        /* 3. 按固定顺序填值，缺失补 0 */
+        Double[] result = new Double[CATEGORIES.length];
+        for (int i = 0; i < CATEGORIES.length; i++) {
+            result[i] = sum.getOrDefault(CATEGORIES[i], 0.0);
+        }
+        return result;
+    }
+
 
 }
