@@ -1,5 +1,16 @@
 [
+
   {
+    "date": "2025/5/14",
+    "amount": 100.0,
+    "type": "Shopping",
+    "object": "Clothing store",
+    "remarks": "Add Remark..."
+  },
+  {
+    "date": "2024/2/18",
+    "amount": 99.0,
+    "type": "Education",
     "date": "2024/1/2",
     "amount": 213.0,
     "type": "Food",

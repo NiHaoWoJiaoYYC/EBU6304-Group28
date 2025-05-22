@@ -48,7 +48,7 @@ public class CurrentMonthBudgetPanel extends JPanel {
         this.actuals     = tmpActuals;
 
         // 3. 表格模型，只允许第2列（预算）编辑
-        this.model = new DefaultTableModel(new String[]{"类别","预算 (¥)","实际支出 (¥)"},0) {
+        this.model = new DefaultTableModel(new String[]{"Category","Budget (¥)","Actual Spending (¥)"},0) {
             @Override
             public boolean isCellEditable(int row, int col) {
                 return col == 1;
@@ -63,9 +63,9 @@ public class CurrentMonthBudgetPanel extends JPanel {
 
         // 顶部：可支配收入 + 保存按钮
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        top.add(new JLabel("可支配收入："));
+        top.add(new JLabel("Disposable Income:"));
         top.add(incomeField);
-        JButton saveBtn = new JButton("保存");
+        JButton saveBtn = new JButton("Save");
         saveBtn.addActionListener(e -> saveData());
         top.add(saveBtn);
         add(top, BorderLayout.NORTH);

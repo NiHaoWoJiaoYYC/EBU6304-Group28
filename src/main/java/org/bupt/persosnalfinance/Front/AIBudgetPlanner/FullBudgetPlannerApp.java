@@ -91,7 +91,7 @@ public class FullBudgetPlannerApp {
         ));
         p.add(genBtn);
 
-        JButton viewBtn = new JButton("本月预算");
+        JButton viewBtn = new JButton("Monthly Budget");
         viewBtn.addActionListener(e -> openOrRefreshBudgetFrame());
         p.add(viewBtn);
 
@@ -127,9 +127,13 @@ public class FullBudgetPlannerApp {
         double totalAI  = aiMap.values().stream().mapToDouble(Double::doubleValue).sum();
         double diff = totalAI - totalAct;
         suggestionArea.setText(String.format(
-                "本月预算结余 ¥%.2f，可%s！",
-                diff, diff >= 0 ? "考虑储蓄或投资" : "注意控制开支"
+                "This month's budget balance is ¥%.2f. %s.",
+                diff,
+                diff >= 0
+                        ? "You may consider saving or investing."
+                        : "Please be mindful of your spending."
         ));
+
     }
 
     private void saveBudgetToJson(double income, Map<String, Double> budgets) {
@@ -174,7 +178,7 @@ public class FullBudgetPlannerApp {
     /** 打开或刷新独立的“本月预算”窗口 **/
     private void openOrRefreshBudgetFrame() {
         if (budgetFrame == null) {
-            budgetFrame = new JFrame("本月预算");
+            budgetFrame = new JFrame("Monthly Budget");
             budgetFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         } else {
             budgetFrame.getContentPane().removeAll();
