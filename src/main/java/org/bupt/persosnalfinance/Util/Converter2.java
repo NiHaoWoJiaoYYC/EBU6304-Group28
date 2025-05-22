@@ -86,11 +86,11 @@ public class Converter2 {
      * @param monthKey "yyyy-MM" 形式的月份键（例：2024-02）
      * @return String[row][2]，每行 [type, totalAmount]；若无记录返回空数组
      */
-    public static String[][] monthTypeSummary(String jsonPath, String monthKey) {
+    public static Double[] monthTypeSummary(String jsonPath, String monthKey) {
 
         // 读取指定月份的全部明细
         String[][] monthTable = jsonToMonthTable(jsonPath, monthKey);
-        if (monthTable.length == 0) return new String[0][0];
+        if (monthTable.length == 0) return new Double[0];
 
         // 累加各类型金额
         Map<String, Double> sumMap = new LinkedHashMap<>();
@@ -108,13 +108,12 @@ public class Converter2 {
             summary[i][1] = String.valueOf(e.getValue());
             i++;
         }
-        return summary;
+        Double[] values = new Double[summary.length];
+        for (int j = 0; j < summary.length; j++) {
+            values[j] = Double.parseDouble(summary[j][1]);
+        }
+        return values;
     }
 
-    /* ================== 调试用打印 ================== */
-    public static void printTable(String[][] t) {
-        if (t == null || t.length == 0) { System.out.println("(empty)"); return; }
-        for (String[] r : t) System.out.println(Arrays.toString(r));
-        System.out.println("Total rows: " + t.length);
-    }
+
 }

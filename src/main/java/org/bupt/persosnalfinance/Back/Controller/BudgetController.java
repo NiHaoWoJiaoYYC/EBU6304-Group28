@@ -19,12 +19,12 @@ public class BudgetController {
     @PostMapping("/check")
     public BudgetResponse checkOverspending(@RequestBody User user,
                                             @RequestParam double threshold) {
-        User userT= User.mockUser();
-        return budgetService.checkOverspending(userT, threshold);
+
+        return budgetService.checkOverspending(user, threshold);
     }
     @GetMapping("/data")
     public BudgetDataResponse getBudgetData() {
-        User mockUser = User.mockUser();
+        User user= new User();
         BudgetDataResponse response = new BudgetDataResponse();
 
         response.setCategories(new String[]{
@@ -33,8 +33,8 @@ public class BudgetController {
                 "Childcare", "Gifts", "Savings", "Others"
         });
 
-        response.setLastQuarterAvg(mockUser.getLastQuarterAvg());
-        response.setThisQuarter(mockUser.getThisQuarter());
+        response.setLastQuarterAvg(user.getLastQuarterAvg());
+        response.setThisQuarter(user.getThisQuarter());
 
         return response;
     }
