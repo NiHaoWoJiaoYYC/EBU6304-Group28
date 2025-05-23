@@ -225,7 +225,7 @@ public class Dashboard extends JFrame {
             }
         });
 
-        for (int i = 0; i < 29; i++) {
+        for (int i = 0; i < transactions.size(); i++) {
             TransactionInformation t = transactions.get(i);
             if (Objects.equals(t.getType(), "Income")) {
                 tableModel.addRow(new Object[]{t.getDate(), String.format("+ %.2f", t.getAmount()), t.getType(), t.getObject(), t.getRemarks()});
@@ -241,8 +241,11 @@ public class Dashboard extends JFrame {
         JButton entryBtn = new JButton("Entry of Transaction Information");
         entryBtn.addActionListener(e -> openTransactionEntry());
 
-        JButton transactionListBtn = new JButton("Detailed Transaction Lists");
-        transactionListBtn.addActionListener(e -> openTransactionList());
+//        JButton transactionListBtn = new JButton("Detailed Transaction Lists");
+//        transactionListBtn.addActionListener(e -> openTransactionList());
+
+        JButton AIDialogueBtn = new JButton("AI Dialogue");
+        AIDialogueBtn.addActionListener(e -> openAIDialogue());
 
         JButton overspendBtn = new JButton("Overspend Reminder");
         overspendBtn.addActionListener(e -> openOverspendReminder());
@@ -260,7 +263,7 @@ public class Dashboard extends JFrame {
 //        aiAlertsBtn.addActionListener(e -> openAIBudgetAlerts());
 
         buttonPanel.add(entryBtn);
-        buttonPanel.add(transactionListBtn);
+        buttonPanel.add(AIDialogueBtn);
         buttonPanel.add(ExportcsvBtn);
         buttonPanel.add(overspendBtn);
         buttonPanel.add(aiBudgetBtn);
@@ -312,8 +315,12 @@ public class Dashboard extends JFrame {
         }
     }
 
-    private void openTransactionList() {
-        TransactionListManager.showTransactionList();
+//    private void openTransactionList() {
+//        TransactionListManager.showTransactionList();
+//    }
+
+    private void openAIDialogue() {
+
     }
 
     private void openTransactionEntry() {
