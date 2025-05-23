@@ -3,6 +3,8 @@ package org.bupt.persosnalfinance.Front.Dashboard;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
@@ -115,13 +117,18 @@ public class Dashboard extends JFrame {
         HomePageBtn.addActionListener(e -> openHomePage());
         headerPanel.add(HomePageBtn, BorderLayout.WEST);
 
-        JPanel RightTitle = new JPanel(new GridLayout(1, 2, 5,5));
+        JPanel RightTitle = new JPanel(new GridLayout(1, 3, 5,5));
+
         JButton RefreshBtn = new JButton("Refresh Table");
         RefreshBtn.addActionListener(e -> refreshCenterPanel());
+
+        JButton transactionListBtn = new JButton("Edit Transaction Lists");
+        transactionListBtn.addActionListener(e -> openTransactionList());
 
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         JLabel dateLabel = new JLabel("Date: " + dateFormat.format(new Date()), SwingConstants.RIGHT);
         RightTitle.add(RefreshBtn);
+        RightTitle.add(transactionListBtn);
         RightTitle.add(dateLabel);
         headerPanel.add(RightTitle, BorderLayout.EAST);
 
@@ -242,9 +249,6 @@ public class Dashboard extends JFrame {
         JButton entryBtn = new JButton("Entry of Transaction Information");
         entryBtn.addActionListener(e -> openTransactionEntry());
 
-//        JButton transactionListBtn = new JButton("Detailed Transaction Lists");
-//        transactionListBtn.addActionListener(e -> openTransactionList());
-
         JButton AIDialogueBtn = new JButton("AI Dialogue");
         AIDialogueBtn.addActionListener(e -> openAIDialogue());
 
@@ -316,13 +320,24 @@ public class Dashboard extends JFrame {
         }
     }
 
-//    private void openTransactionList() {
-//        TransactionListManager.showTransactionList();
-//    }
+    private void openTransactionList() {
+        TransactionListManager.showTransactionList();
+    }
+
+    private ObservationFrame observationFrame;
 
     private void openAIDialogue() {
         SwingUtilities.invokeLater(() -> {
-            ObservationFrame observationFrame = new ObservationFrame();
+            if (observationFrame == null) {
+                observationFrame = new ObservationFrame(); // 传入父窗口
+                observationFrame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+                observationFrame.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        observationFrame = null; // 窗口关闭后释放实例
+                    }
+                });
+            }
             observationFrame.setVisible(true);
         });
     }
