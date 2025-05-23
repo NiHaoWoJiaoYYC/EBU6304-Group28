@@ -16,6 +16,7 @@ import org.bupt.persosnalfinance.Front.ExportCsvPanel.ExportCsvPanel;
 import org.bupt.persosnalfinance.Front.AlertFront.BudgetApp;
 import org.bupt.persosnalfinance.Front.HomePage.HomePage;
 import org.bupt.persosnalfinance.Front.Localization.CombinedUIManager;
+import org.bupt.persosnalfinance.Front.visualization.ObservationFrame;
 import org.bupt.persosnalfinance.dto.TransactionInformation;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -320,7 +321,10 @@ public class Dashboard extends JFrame {
 //    }
 
     private void openAIDialogue() {
-
+        SwingUtilities.invokeLater(() -> {
+            ObservationFrame observationFrame = new ObservationFrame();
+            observationFrame.setVisible(true);
+        });
     }
 
     private void openTransactionEntry() {
