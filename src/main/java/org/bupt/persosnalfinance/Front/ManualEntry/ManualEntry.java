@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 
 import org.bupt.persosnalfinance.dto.TransactionInformation;
 
@@ -129,6 +131,44 @@ public class ManualEntry {
         });
         cancelButton.addActionListener(e -> frame.dispose());
         viewButton.addActionListener(e -> new DisplayTransactionInformation());
+
+        // FocusListeners 
+        dateField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                if (dateField.getText().equals("yyyy/MM/dd")) dateField.setText("");
+            }
+            public void focusLost(FocusEvent e) {
+                if (dateField.getText().trim().isEmpty()) dateField.setText("yyyy/MM/dd");
+            }
+        });
+
+        amountField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                if (amountField.getText().equals("0")) amountField.setText("");
+            }
+            public void focusLost(FocusEvent e) {
+                if (amountField.getText().trim().isEmpty()) amountField.setText("0");
+            }
+        });
+
+        objectField.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                if (objectField.getText().equals("enter...")) objectField.setText("");
+            }
+            public void focusLost(FocusEvent e) {
+                if (objectField.getText().trim().isEmpty()) objectField.setText("enter...");
+            }
+        });
+
+        remarkArea.addFocusListener(new FocusAdapter() {
+            public void focusGained(FocusEvent e) {
+                if (remarkArea.getText().equals("Add Remark...")) remarkArea.setText("");
+            }
+            public void focusLost(FocusEvent e) {
+                if (remarkArea.getText().trim().isEmpty()) remarkArea.setText("Add Remark...");
+            }
+        });
+
 
         frame.setLocationRelativeTo(null);
         frame.add(panel);
