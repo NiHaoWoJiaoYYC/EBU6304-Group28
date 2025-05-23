@@ -40,6 +40,9 @@ public class ImportCSVPanel extends JPanel {
     private List<String[]> dataList;
     private DefaultTableModel tableModel;
 
+    private static final Set<String> MANDATORY =
+            Set.of("date","amount","type","object","remark");
+
     public ImportCSVPanel() {
         setLayout(new BorderLayout(10, 10));
         buildTopPanel();
@@ -56,7 +59,7 @@ public class ImportCSVPanel extends JPanel {
         top.add(functionCombo);
 
         top.add(new JLabel("Choose Time Unit:"));
-        timeUnitCombo = new JComboBox<>(new String[]{"Day", "Month", "Year"});
+        timeUnitCombo = new JComboBox<>(new String[]{"Day"});
         top.add(timeUnitCombo);
 
         add(top, BorderLayout.NORTH);
@@ -114,7 +117,24 @@ public class ImportCSVPanel extends JPanel {
                 if (line != null) {
                     String[] header = parseCsvLine(line);
                     columnListModel.clear();
-                    for (String col : header) columnListModel.addElement(col);
+
+                    /* ---- 新增：记录要自动选中的列下标 ---- */
+                    Set<String> mandatory = Set.of("date","amount","type","object","remark");
+                    List<Integer> autoSelect = new ArrayList<>();
+
+                    for (int i = 0; i < header.length; i++) {
+                        String col = header[i];
+                        columnListModel.addElement(col);
+
+                        if (mandatory.contains(col.trim().toLowerCase())) {
+                            autoSelect.add(i);
+                        }
+                    }
+
+                    /* ---- 新增：执行自动勾选 ---- */
+                    for (Integer idx : autoSelect) {
+                        columnList.addSelectionInterval(idx, idx);
+                    }
                 }
             } catch (IOException ex) {
                 JOptionPane.showMessageDialog(this,
@@ -132,6 +152,9 @@ public class ImportCSVPanel extends JPanel {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        if (!checkColumnSelection()) return;
+
         loadDataList();                 // dataList + tableModel
         JTextArea ta = new JTextArea(tableModelToString());
         ta.setEditable(false);
@@ -155,6 +178,8 @@ public class ImportCSVPanel extends JPanel {
                     JOptionPane.WARNING_MESSAGE);
             return;
         }
+
+        if (!checkColumnSelection()) return;
 
         try {
             RestTemplate rt = new RestTemplate();
@@ -251,4 +276,22 @@ public class ImportCSVPanel extends JPanel {
         }
         return sb.toString();
     }
+
+    private boolean checkColumnSelection() {
+
+        List<String> selected = columnList.getSelectedValuesList()
+                .stream()
+                .map(s -> s.trim().toLowerCase())
+                .toList();
+
+        if (!selected.containsAll(MANDATORY)) {           // ← 核心判断
+            JOptionPane.showMessageDialog(this,
+                    "Please select mandatory columns: " + MANDATORY,
+                    "Warning", JOptionPane.WARNING_MESSAGE);
+            return false;
+        }
+        return true;
+    }
 }
+
+
