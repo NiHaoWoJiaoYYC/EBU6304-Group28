@@ -14,10 +14,7 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.util.List;
 import java.util.Map;
 
@@ -26,7 +23,7 @@ public class FullBudgetPlannerApp {
     private JFrame frame;
     private JTextArea suggestionArea;
     private JPanel centerPanel;
-    private JFrame budgetFrame;  // 月预算窗口
+    private JFrame budgetFrame;
     private static final String BUDGET_JSON = "src/main/data/current_budget.json";
 
     public static synchronized void showBudgetPlanner() {
@@ -48,7 +45,7 @@ public class FullBudgetPlannerApp {
         frame = new JFrame("AI Personalized Budget Planning");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.setSize(1000, 650);
-        frame.setLayout(new BorderLayout(5,5));
+        frame.setLayout(new BorderLayout(5, 5));
 
         frame.add(createInputPanel(), BorderLayout.WEST);
 
@@ -64,7 +61,7 @@ public class FullBudgetPlannerApp {
     }
 
     private JPanel createInputPanel() {
-        JPanel p = new JPanel(new GridLayout(0,2,5,5));
+        JPanel p = new JPanel(new GridLayout(0, 2, 5, 5));
         p.setBorder(BorderFactory.createTitledBorder("User Information"));
 
         JTextField occ = new JTextField();
@@ -75,13 +72,13 @@ public class FullBudgetPlannerApp {
         JCheckBox chPartner = new JCheckBox();
         JCheckBox chPets = new JCheckBox();
 
-        p.add(new JLabel("Occupation:"));             p.add(occ);
-        p.add(new JLabel("Disposable Income:"));     p.add(inc);
-        p.add(new JLabel("City:"));                  p.add(city);
+        p.add(new JLabel("Occupation:"));                 p.add(occ);
+        p.add(new JLabel("Disposable Income:"));          p.add(inc);
+        p.add(new JLabel("City:"));                       p.add(city);
         p.add(new JLabel("Number of Elderly to Support:")); p.add(eld);
         p.add(new JLabel("Number of Children to Support:")); p.add(chi);
-        p.add(new JLabel("Have a Partner:"));        p.add(chPartner);
-        p.add(new JLabel("Have Pets:"));             p.add(chPets);
+        p.add(new JLabel("Have a Partner:"));             p.add(chPartner);
+        p.add(new JLabel("Have Pets:"));                  p.add(chPets);
 
         JButton genBtn = new JButton("Generate Budget");
         genBtn.addActionListener((ActionEvent e) -> onGenerate(
@@ -98,42 +95,45 @@ public class FullBudgetPlannerApp {
         return p;
     }
 
-    private void onGenerate(String occ, String inc, String city,
-                            String eld, String chi,
-                            boolean ptn, boolean pts) {
-        // 构造用户信息
+    private void onGenerate(
+            String occ, String inc, String city,
+            String eld, String chi,
+            boolean ptn, boolean pts) {
+
+        // 1) 解析可支配收入
+        double disposableIncome;
+        try {
+            disposableIncome = Double.parseDouble(inc);
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(frame, "Please enter a valid number for Disposable Income.");
+            return;
+        }
+
+        // 2) 构造 UserInfo
         UserInfo user = new UserInfo();
         user.setOccupation(occ);
-        user.setDisposableIncome(Double.parseDouble(inc));
+        user.setDisposableIncome(disposableIncome);
         user.setCity(city);
         user.setNumElderlyToSupport(Integer.parseInt(eld));
         user.setNumChildrenToSupport(Integer.parseInt(chi));
         user.setHasPartner(ptn);
         user.setHasPets(pts);
 
-        // AI 预算 + 实际支出
-        Map<String, Double> aiMap = BudgetAIService.generateBudget(user);
-        Map<String, Double> actualMap =
-                BudgetAIService.getActualSpendingFromJson("src/main/data/transactionInformation.json");
+        // 3) AI 生成预算 + 本月实际支出
+        Map<String, Double> aiMap     = BudgetAIService.generateBudget(user);
+        Map<String, Double> actualMap = BudgetAIService.getActualSpendingFromJson(
+                "src/main/data/transactionInformation.json"
+        );
 
-        // 保存 JSON
-        saveBudgetToJson(user.getDisposableIncome(), aiMap);
+        // 4) 保存预算到 JSON
+        saveBudgetToJson(disposableIncome, aiMap);
 
-        // 主界面表格+图表展示
+        // 5) 渲染表格+图表
         displayTableAndChart(aiMap, actualMap);
 
-        // 建议
-        double totalAct = actualMap.values().stream().mapToDouble(Double::doubleValue).sum();
-        double totalAI  = aiMap.values().stream().mapToDouble(Double::doubleValue).sum();
-        double diff = totalAI - totalAct;
-        suggestionArea.setText(String.format(
-                "This month's budget balance is ¥%.2f. %s.",
-                diff,
-                diff >= 0
-                        ? "You may consider saving or investing."
-                        : "Please be mindful of your spending."
-        ));
-
+        // 6) 调用 AI 生成文字建议
+        String advice = BudgetAIService.generateSuggestion(user, actualMap);
+        suggestionArea.setText(advice);
     }
 
     private void saveBudgetToJson(double income, Map<String, Double> budgets) {
@@ -142,15 +142,18 @@ public class FullBudgetPlannerApp {
                     .create()
                     .toJson(Map.of(
                             "disposableIncome", income,
-                            "budgets",           budgets
+                            "budgets", budgets
                     ), writer);
         } catch (Exception ex) {
             ex.printStackTrace();
+            JOptionPane.showMessageDialog(frame, "Failed to save budget JSON.");
         }
     }
 
-    private void displayTableAndChart(Map<String, Double> budgets,
-                                      Map<String, Double> actuals) {
+    private void displayTableAndChart(
+            Map<String, Double> budgets,
+            Map<String, Double> actuals) {
+
         centerPanel.removeAll();
 
         List<SpendingRecord> recs = SpendingRecord.createFromMaps(actuals, budgets);
@@ -161,6 +164,7 @@ public class FullBudgetPlannerApp {
             dataset.addValue(r.getActualSpending(), "Actual", r.getCategory());
             dataset.addValue(r.getAiBudget(),      "AI",     r.getCategory());
         }
+
         JFreeChart chart = ChartFactory.createBarChart(
                 "Actual vs AI Budget", "Category", "Amount (¥)", dataset
         );
@@ -175,7 +179,6 @@ public class FullBudgetPlannerApp {
         centerPanel.repaint();
     }
 
-    /** 打开或刷新独立的“本月预算”窗口 **/
     private void openOrRefreshBudgetFrame() {
         if (budgetFrame == null) {
             budgetFrame = new JFrame("Monthly Budget");
@@ -183,7 +186,7 @@ public class FullBudgetPlannerApp {
         } else {
             budgetFrame.getContentPane().removeAll();
         }
-        // 每次都重新创建面板并传入刷新回调
+
         CurrentMonthBudgetPanel panel =
                 new CurrentMonthBudgetPanel(BUDGET_JSON, this::refreshMainDisplay);
         budgetFrame.getContentPane().add(panel);
@@ -192,21 +195,18 @@ public class FullBudgetPlannerApp {
         budgetFrame.setVisible(true);
     }
 
-    /** 月预算保存后回调，刷新主界面内容 **/
     private void refreshMainDisplay() {
         try (Reader reader = new FileReader(BUDGET_JSON)) {
             BudgetData data = new Gson().fromJson(reader, BudgetData.class);
-            Map<String, Double> budgets = data.budgets;
-            Map<String, Double> actuals = BudgetAIService.getActualSpendingFromJson(
-                    "src/main/data/transactionInformation.json"
+            displayTableAndChart(
+                    data.budgets,
+                    BudgetAIService.getActualSpendingFromJson("src/main/data/transactionInformation.json")
             );
-            displayTableAndChart(budgets, actuals);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /** 内部类，用于解析 JSON **/
     private static class BudgetData {
         double disposableIncome;
         Map<String, Double> budgets;
