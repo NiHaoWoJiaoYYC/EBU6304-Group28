@@ -5,6 +5,7 @@ import org.bupt.persosnalfinance.Back.Controller.LocalizationController;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.general.DefaultPieDataset;
 
 import javax.swing.*;
@@ -26,7 +27,8 @@ public class PlanPanel extends JPanel {
 
     private final DefaultTableModel model;
     private final JTable table;
-    private final DefaultPieDataset<String> dataset;
+    private JLabel totalLabel;
+    private DefaultPieDataset dataset = new DefaultPieDataset();
 
     // 添加记录的输入组件
     private final JSpinner dateSpinner;
@@ -70,19 +72,38 @@ public class PlanPanel extends JPanel {
 
         add(top, BorderLayout.NORTH);
 
-        // 中部：表格 + 饼图
-        model = new DefaultTableModel(new String[]{"Date","Category","Payment","Amount"}, 0);
-        table = new JTable(model);
-        JScrollPane scrollPane = new JScrollPane(table);
+        // 中部：表格
+    // 把原来只有 Date/Category/Payment/Amount 的列，改为第一列专门存放 ID
+    model = new DefaultTableModel(new String[]{"ID", "Date", "Category", "Payment", "Amount"}, 0);
+    table = new JTable(model);
+    // 隐藏 ID 列
+    table.getColumnModel().getColumn(0).setMinWidth(0);
+    table.getColumnModel().getColumn(0).setMaxWidth(0);
+JScrollPane tableScroll = new JScrollPane(table);
 
-        dataset = new DefaultPieDataset<>();
-        JFreeChart chart = ChartFactory.createPieChart("By Category", dataset, true, true, false);
-        ChartPanel chartPanel = new ChartPanel(chart);
+        totalLabel = new JLabel("Total: 0.00", SwingConstants.LEFT);
 
-        JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, scrollPane, chartPanel);
-        split.setResizeWeight(0.3);
-        add(split, BorderLayout.CENTER);
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        leftPanel.add(tableScroll, BorderLayout.CENTER);
+        leftPanel.add(totalLabel, BorderLayout.SOUTH);
+
+        // 饼图
+        ChartPanel chartPanel = new ChartPanel(createPieChart());
+        // 调整饼图面板首选尺寸，防止过大
+        chartPanel.setPreferredSize(new Dimension(300, 250));
+
+        // 水平拆分：左侧表格+Total，右侧饼图
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, chartPanel);
+        // 这里可以用比例或具体像素定位分割线
+        splitPane.setResizeWeight(0.6);      // 左侧占 60%
+        splitPane.setOneTouchExpandable(true);
+
+        add(splitPane, BorderLayout.CENTER); 
+        
+        // 第一次加载数据
+        refresh();
     }
+
 
     /**
      * 注入 Controller，并触发第一次刷新（需在 CombinedUI 中调用）
@@ -133,46 +154,63 @@ public class PlanPanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Please select a holiday first.", "Warning", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        int[] rows = table.getSelectedRows();
-        if (rows.length == 0) {
-            JOptionPane.showMessageDialog(this, "Please select at least one row to delete.", "Warning", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-        int choice = JOptionPane.showConfirmDialog(
-            this,
-            "Confirm delete " + rows.length + " selected record(s)?",
-            "Delete Confirmation",
-            JOptionPane.YES_NO_OPTION
-        );
-        if (choice != JOptionPane.YES_OPTION) {
-            return;
-        }
-        List<PlanDTO> list = controller.getPlansForHoliday(currentHolidayId);
-        for (int i = rows.length - 1; i >= 0; i--) {
-            controller.removePlan(list.get(rows[i]).getId());
-        }
-        refresh();
+         int[] rows = table.getSelectedRows();
+    if (rows.length == 0) {
+        JOptionPane.showMessageDialog(this, "请先选中要删除的行", "Warning", JOptionPane.WARNING_MESSAGE);
+        return;
+    }
+    int choice = JOptionPane.showConfirmDialog(this, "确认删除选中记录？", "Confirm", JOptionPane.YES_NO_OPTION);
+    if (choice != JOptionPane.YES_OPTION) {
+        return;
+    }
+
+    // 调用 controller.removePlan(id) 删除
+    for (int i = rows.length - 1; i >= 0; i--) {
+        // 第 0 列即为 ID
+        Integer id = (Integer) model.getValueAt(rows[i], 0);
+        controller.removePlan(id);
+    }
+    // 删除后重新刷新：表格、饼图、totalLabel 都会一起更新
+    refresh();
     }
 
     /**
      * 刷新表格与饼图
      */
     private void refresh() {
-        model.setRowCount(0);
-        Map<String, Double> sums = new HashMap<>();
-        if (controller != null && currentHolidayId != null) {
-            for (PlanDTO p : controller.getPlansForHoliday(currentHolidayId)) {
-                model.addRow(new Object[]{p.getDate(), p.getCategory(), p.getPaymentMethod(), p.getAmount()});
-                sums.merge(p.getCategory(), p.getAmount(), Double::sum);
-            }
-        }
-        dataset.clear();
-        if (sums.isEmpty()) {
-            dataset.setValue("No Data", 1.0);
-        } else {
-            sums.forEach(dataset::setValue);
+    model.setRowCount(0);
+    Map<String, Double> sums = new HashMap<>();
+    double total = 0.0;
+
+    if (controller != null && currentHolidayId != null) {
+        List<PlanDTO> plans = controller.getPlansForHoliday(currentHolidayId);
+        for (PlanDTO p : plans) {
+            // 第 0 列存放 ID，保证后面删除能准确找到记录
+            model.addRow(new Object[]{
+                p.getId(),
+                p.getDate(),
+                p.getCategory(),
+                p.getPaymentMethod(),
+                p.getAmount()
+            });
+            total += p.getAmount();
+            sums.merge(p.getCategory(), p.getAmount(), Double::sum);
         }
     }
+
+    // 更新总计显示（这里用本地货币格式，也可以自定义格式）
+    NumberFormat fmt = NumberFormat.getCurrencyInstance();
+    totalLabel.setText("Total: " + fmt.format(total));
+
+    // 下面是更新饼图的原有逻辑，不需改动
+    dataset.clear();
+    if (sums.isEmpty()) {
+        dataset.setValue("No Data", 1.0);
+    } else {
+        sums.forEach(dataset::setValue);
+    }
+}
+    
 
     /**
      * 清空输入控件
@@ -182,5 +220,21 @@ public class PlanPanel extends JPanel {
         categoryCombo.setSelectedIndex(0);
         paymentCombo.setSelectedIndex(0);
         amountField.setValue(null);
+    }
+
+    /**
+     * 新增：根据 dataset 构建并返回一个 JFreeChart 饼图
+     */
+    private JFreeChart createPieChart() {
+        JFreeChart chart = ChartFactory.createPieChart(
+            "Spending by Category",  // 标题
+            dataset,                // 数据集
+            true,                   // 是否显示图例
+            true,                   // 是否生成工具提示
+            false                   // 是否生成 URLs
+        );
+        PiePlot plot = (PiePlot) chart.getPlot();
+        plot.setSectionOutlinesVisible(false);
+        return chart;
     }
 }

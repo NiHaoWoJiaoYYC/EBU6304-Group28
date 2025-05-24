@@ -17,12 +17,32 @@ public class PlanService {
     public PlanService() {
         // 从 DataStore 读取之前保存的记录
         this.records = new ArrayList<>(DataStore.loadPlans());
+
+        // 为历史遗留的无 ID 记录分配唯一 ID
+        int maxId = records.stream()
+                           .filter(p -> p.getId() != null)
+                           .mapToInt(PlanDTO::getId)
+                           .max()
+                           .orElse(0);
+        for (PlanDTO p : records) {
+            if (p.getId() == null) {
+                p.setId(++maxId);
+            }
+        }
+        // 立即持久化一次，保证 plans.json 中都有合法 ID
+        DataStore.savePlans(records);
     }
 
     /**
-     * 新增记录并持久化
+     * 新增记录并持久化，新增时给 DTO 分配不重复的 ID
      */
     public void addRecord(PlanDTO dto) {
+        // 计算一个比当前所有 ID 最大值都大的新 ID
+        int newId = records.stream()
+                           .mapToInt(p -> p.getId() != null ? p.getId() : 0)
+                           .max()
+                           .orElse(0) + 1;
+        dto.setId(newId);
         records.add(dto);
         DataStore.savePlans(records);
     }
@@ -31,7 +51,7 @@ public class PlanService {
      * 根据记录 ID 删除并持久化
      */
     public void removeRecord(int planId) {
-        records.removeIf(p -> p.getId() == planId);
+        records.removeIf(p -> planId == p.getId());
         DataStore.savePlans(records);
     }
 
