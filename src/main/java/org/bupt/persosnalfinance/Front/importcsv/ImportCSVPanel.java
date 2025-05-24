@@ -41,7 +41,7 @@ public class ImportCSVPanel extends JPanel {
     private DefaultTableModel tableModel;
 
     private static final Set<String> MANDATORY =
-            Set.of("date","amount","type","object","remark");
+            Set.of("date","amount","type","object","remarks");
 
     public ImportCSVPanel() {
         setLayout(new BorderLayout(10, 10));
@@ -119,7 +119,7 @@ public class ImportCSVPanel extends JPanel {
                     columnListModel.clear();
 
                     /* ---- 新增：记录要自动选中的列下标 ---- */
-                    Set<String> mandatory = Set.of("date","amount","type","object","remark");
+                    Set<String> mandatory = Set.of("date","amount","type","object","remarks");
                     List<Integer> autoSelect = new ArrayList<>();
 
                     for (int i = 0; i < header.length; i++) {
