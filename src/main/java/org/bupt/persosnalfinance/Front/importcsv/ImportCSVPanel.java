@@ -17,15 +17,15 @@ import org.springframework.web.client.RestTemplate;
 import org.bupt.persosnalfinance.Util.ImportSuccessListener;
 
 /**
- * Swing 面板：选择 CSV -> 预览 -> 上传给后端 /api/importcsv
- * 前端不再做数据落盘，后端负责解析并写入 transactionInformation.json
+ * Swing panel：choose CSV -> preview -> upload to backend /api/importcsv
+ * write in transactionInformation.json
  */
 public class ImportCSVPanel extends JPanel {
 
-    /* ----------------- 常量 ----------------- */
+    /* -----------------  ----------------- */
     private static final String BACKEND_IMPORT_URL = "http://localhost:8080/api/importcsv";
 
-    /* ----------------- UI 组件 ----------------- */
+    /* ----------------- UI  ----------------- */
     private JComboBox<String> functionCombo;
     private JComboBox<String> timeUnitCombo;
     private JList<String> columnList;
@@ -35,7 +35,7 @@ public class ImportCSVPanel extends JPanel {
     private JButton previewButton;
     private JButton submitButton;
 
-    /* ----------------- 数据 ----------------- */
+    /* ----------------- data ----------------- */
     private File csvFile;
     private List<String[]> dataList;
     private DefaultTableModel tableModel;
@@ -50,7 +50,7 @@ public class ImportCSVPanel extends JPanel {
         buildBottomPanel();
     }
 
-    /* ===== 顶部：功能 & 时间单位 ===== */
+    /* ===== top ===== */
     private void buildTopPanel() {
         JPanel top = new JPanel(new GridLayout(2, 2, 5, 5));
         top.add(new JLabel("Choose Function:"));
@@ -65,7 +65,7 @@ public class ImportCSVPanel extends JPanel {
         add(top, BorderLayout.NORTH);
     }
 
-    /* ===== 中部：列选择 + 文件选择 ===== */
+    /* ===== middle ===== */
     private void buildCenterPanel() {
         JPanel center = new JPanel(new GridLayout(1, 2, 10, 10));
 
@@ -85,7 +85,7 @@ public class ImportCSVPanel extends JPanel {
         add(center, BorderLayout.CENTER);
     }
 
-    /* ===== 底部：预览 & 提交 ===== */
+    /* ===== bottom ===== */
     private void buildBottomPanel() {
         JPanel bottom = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
@@ -100,7 +100,7 @@ public class ImportCSVPanel extends JPanel {
         add(bottom, BorderLayout.SOUTH);
     }
 
-    /* ----------------- 事件处理 ----------------- */
+    /* ----------------- handler ----------------- */
 
     /** 选择文件：读取第一行 Header，填充列名列表 */
     private void onChooseFile(ActionEvent e) {
@@ -118,7 +118,7 @@ public class ImportCSVPanel extends JPanel {
                     String[] header = parseCsvLine(line);
                     columnListModel.clear();
 
-                    /* ---- 新增：记录要自动选中的列下标 ---- */
+
                     Set<String> mandatory = Set.of("date","amount","type","object","remarks");
                     List<Integer> autoSelect = new ArrayList<>();
 
@@ -131,7 +131,7 @@ public class ImportCSVPanel extends JPanel {
                         }
                     }
 
-                    /* ---- 新增：执行自动勾选 ---- */
+
                     for (Integer idx : autoSelect) {
                         columnList.addSelectionInterval(idx, idx);
                     }
@@ -144,7 +144,7 @@ public class ImportCSVPanel extends JPanel {
         }
     }
 
-    /** 预览：只做本地表格展示 */
+    /** preview */
     private void onPreview(ActionEvent e) {
         if (csvFile == null) {
             JOptionPane.showMessageDialog(this,
@@ -170,7 +170,7 @@ public class ImportCSVPanel extends JPanel {
         this.successListener = listener;
     }
 
-    /** Submit：把整份 CSV 文件 POST 给后端 */
+    /** Submit */
     private void onSubmit(ActionEvent e) {
         if (csvFile == null) {
             JOptionPane.showMessageDialog(this,
@@ -200,13 +200,13 @@ public class ImportCSVPanel extends JPanel {
                     "Success", JOptionPane.INFORMATION_MESSAGE);
 
             if (inserted != null) {
-                // 关闭当前 Dialog
+
                 Window parentWindow = SwingUtilities.getWindowAncestor(this);
                 if (parentWindow != null) {
                     parentWindow.dispose();
                 }
 
-                // 触发回调（通知 HomePage 关闭并打开 Dashboard）
+
                 if (successListener != null) {
                     successListener.onImportSuccess();
                 } else {
@@ -224,7 +224,7 @@ public class ImportCSVPanel extends JPanel {
 
     /* ----------------- 工具方法 ----------------- */
 
-    /** 简单 CSV 解析（逗号 + 双引号） */
+    /** */
     private String[] parseCsvLine(String line) {
         List<String> res = new ArrayList<>();
         StringBuilder sb = new StringBuilder();
@@ -243,7 +243,7 @@ public class ImportCSVPanel extends JPanel {
         return res.toArray(new String[0]);
     }
 
-    /** 把 CSV 全读进 dataList & tableModel（仅用于预览） */
+    /**  dataList & tableModel */
     private void loadDataList() {
         dataList = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(csvFile))) {
@@ -264,7 +264,7 @@ public class ImportCSVPanel extends JPanel {
         }
     }
 
-    /** 把 tableModel 转成可读字符串（仅预览前 100 行） */
+    /** 把 tableModel */
     private String tableModelToString() {
         StringBuilder sb = new StringBuilder();
         for (int r = 0; r < tableModel.getRowCount(); r++) {

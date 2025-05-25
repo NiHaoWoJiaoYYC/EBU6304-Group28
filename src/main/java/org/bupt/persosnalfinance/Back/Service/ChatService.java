@@ -6,5 +6,5 @@ import org.bupt.persosnalfinance.dto.ChatResponse;
 
 public interface ChatService {
     ChatResponse chat(ChatRequest req, String userId);
-    List<String> getDialog(String userId);   // 前端若想拉历史
+    List<String> getDialog(String userId);   // Pull history Dialog
 }

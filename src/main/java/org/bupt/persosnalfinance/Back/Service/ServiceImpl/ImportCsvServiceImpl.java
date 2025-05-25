@@ -3,7 +3,7 @@ package org.bupt.persosnalfinance.Back.Service.ServiceImpl;
 import com.opencsv.CSVReader;
 import com.opencsv.exceptions.CsvValidationException;
 import org.bupt.persosnalfinance.Back.Service.ImportCsvService;
-import org.bupt.persosnalfinance.dto.TransactionInformation; // ← 保持用户已有包名拼写
+import org.bupt.persosnalfinance.dto.TransactionInformation;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,7 +45,7 @@ public class ImportCsvServiceImpl implements ImportCsvService {
             throw new RuntimeException("CSV 解析失败: " + e.getMessage(), e);
         }
 
-        // 将整表写回（文件放在 resources/data 下）
+        // write to json
         TransactionInformation.saveToJSON(
                 "src/main/data/transactionInformation.json");
 

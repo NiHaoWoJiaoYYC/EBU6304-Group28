@@ -8,7 +8,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/transactions")
-@CrossOrigin      // Swing / JavaFX 本地调用需要
+@CrossOrigin
 public class TransactionController {
 
     private final TransactionService service;
@@ -17,7 +17,7 @@ public class TransactionController {
         this.service = svc;
     }
 
-    /** GET /api/transactions  → 返回所有记录 */
+    /** GET /api/transactions  → response records */
     @GetMapping
     public List<TransactionInformation> all() {
         return service.getAllTransactions();

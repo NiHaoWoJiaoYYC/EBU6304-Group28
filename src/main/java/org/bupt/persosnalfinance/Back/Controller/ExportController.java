@@ -14,11 +14,11 @@ public class ExportController {
     private final ExportService svc;
     public ExportController(ExportService s){ this.svc = s; }
 
-    /** GET /api/csv -> 返回现有 CSV 文件列表 */
+    /** GET /api/csv -> return csv list */
     @GetMapping
     public List<String> list(){ return svc.listCsvFiles(); }
 
-    /** POST /api/csv  {filename:"my"} -> 生成 CSV, 返回文件名 */
+    /** POST /api/csv  {filename:"my"} -> make CSV, return filename */
     @PostMapping
     public String export(@RequestBody ExportRequest req){
         return svc.exportToCsv(req.getFilename());
