@@ -24,13 +24,21 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
-
+/**
+ * Dashboard class provides a comprehensive interface to visualize and manage personal finance data.
+ * It includes functions for displaying monthly expenses, income, transaction history, and access to
+ * various modules like manual entry, AI planning, export, and alerts.
+ *
+ * @author Xuerui Dong
+ */
 public class Dashboard extends JFrame {
-
     private Map<String, Double> monthlyExpenses = new HashMap<>();
     private double monthlyIncome = 0;
     private DefaultTableModel tableModel;
 
+    /**
+     * Constructs the main dashboard window with charts, transaction history, and navigation buttons.
+     */
     public Dashboard() {
         setTitle("Personal Finance Dashboard");
         setSize(1200, 724);
@@ -41,35 +49,32 @@ public class Dashboard extends JFrame {
 
         JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-
         mainPanel.add(createHeaderPanel(), BorderLayout.NORTH);
         mainPanel.add(createCenterPanel(), BorderLayout.CENTER);
         mainPanel.add(createButtonPanel(), BorderLayout.SOUTH);
-
         add(mainPanel);
     }
 
+    /**
+     * Calculate the sum of transactions by category for the current month.
+     *
+     * @return a map containing total amount per category.
+     */
     public Map<String, Double> calculateMonthlyCategorySums() {
-        // 获取当前年月
         Calendar cal = Calendar.getInstance();
         int currentYear = cal.get(Calendar.YEAR);
-        int currentMonth = cal.get(Calendar.MONTH) + 1; // 月份从0开始，所以要加1
+        int currentMonth = cal.get(Calendar.MONTH) + 1;
 
-        // 获取交易列表
         TransactionInformation.loadFromJSON("src/main/data/transactionInformation.json");
         List<TransactionInformation> transactions = TransactionInformation.transactionList;
 
-        // 按分类汇总金额
         Map<String, Double> categorySums = transactions.stream()
                 .filter(t -> {
                     try {
-                        // 解析交易日期
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
                         Date transactionDate = sdf.parse(t.getDate());
                         Calendar transactionCal = Calendar.getInstance();
                         transactionCal.setTime(transactionDate);
-
-                        // 检查是否是当前年月
                         return transactionCal.get(Calendar.YEAR) == currentYear
                                 && (transactionCal.get(Calendar.MONTH) + 1) == currentMonth;
                     } catch (Exception e) {
@@ -77,13 +82,16 @@ public class Dashboard extends JFrame {
                     }
                 })
                 .collect(Collectors.groupingBy(
-                        TransactionInformation::getType, // 按分类分组
-                        Collectors.summingDouble(TransactionInformation::getAmount) // 对金额求和
+                        TransactionInformation::getType,
+                        Collectors.summingDouble(TransactionInformation::getAmount)
                 ));
 
         return categorySums;
     }
 
+    /**
+     * Initializes category list with zero amounts and updates values from transaction data.
+     */
     private void initializeSampleData() {
         monthlyExpenses.put("Food", 0.00);
         monthlyExpenses.put("Housing/Rent", 0.00);
@@ -102,14 +110,19 @@ public class Dashboard extends JFrame {
 
         Map<String, Double> monthlySums = calculateMonthlyCategorySums();
         monthlySums.forEach((category, sum) -> {
-            if(!"Income".equals(category)) {
+            if (!"Income".equals(category)) {
                 monthlyExpenses.put(category, sum);
+            } else {
+                monthlyIncome = sum;
             }
-            else monthlyIncome = sum;
-//            System.out.println(category + ": " + sum);
         });
     }
 
+    /**
+     * Creates the header panel with navigation and date information.
+     *
+     * @return the constructed JPanel.
+     */
     private JPanel createHeaderPanel() {
         JPanel headerPanel = new JPanel(new BorderLayout());
 
@@ -117,8 +130,7 @@ public class Dashboard extends JFrame {
         HomePageBtn.addActionListener(e -> openHomePage());
         headerPanel.add(HomePageBtn, BorderLayout.WEST);
 
-        JPanel RightTitle = new JPanel(new GridLayout(1, 3, 5,5));
-
+        JPanel RightTitle = new JPanel(new GridLayout(1, 3, 5, 5));
         JButton RefreshBtn = new JButton("Refresh Table");
         RefreshBtn.addActionListener(e -> refreshCenterPanel());
 
@@ -137,25 +149,36 @@ public class Dashboard extends JFrame {
 
     private JPanel centerPanel;
 
+    /**
+     * Creates the central panel with pie chart and summary table.
+     *
+     * @return the central JPanel.
+     */
     private JPanel createCenterPanel() {
         centerPanel = new JPanel(new GridLayout(1, 2, 10, 10));
-        refreshCenterPanel(); // 首次加载内容
+        refreshCenterPanel();
         return centerPanel;
     }
 
+    /**
+     * Refreshes content in the center panel.
+     */
     private void refreshCenterPanel() {
         centerPanel.removeAll();
         centerPanel.add(createPieChartPanel());
         centerPanel.add(createSummaryPanel());
-        centerPanel.revalidate(); // 只有添加到 UI 后才需要
+        centerPanel.revalidate();
         centerPanel.repaint();
     }
 
+    /**
+     * Creates the panel that displays a pie chart of monthly expenses.
+     *
+     * @return the chart JPanel.
+     */
     private JPanel createPieChartPanel() {
         DefaultPieDataset dataset = new DefaultPieDataset();
-
         initializeSampleData();
-
         for (Map.Entry<String, Double> entry : monthlyExpenses.entrySet()) {
             dataset.setValue(entry.getKey(), entry.getValue());
         }
@@ -167,7 +190,6 @@ public class Dashboard extends JFrame {
                 true,
                 false
         );
-
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new Dimension(400, 300));
 
@@ -178,9 +200,13 @@ public class Dashboard extends JFrame {
         return panel;
     }
 
+    /**
+     * Creates the summary panel that shows income, expenses, and recent transactions.
+     *
+     * @return the summary JPanel.
+     */
     private JPanel createSummaryPanel() {
         JPanel summaryPanel = new JPanel(new BorderLayout(10, 10));
-
         JPanel topSummary = new JPanel(new GridLayout(1, 2, 10, 10));
 
         initializeSampleData();
@@ -210,15 +236,16 @@ public class Dashboard extends JFrame {
         refreshtable();
 
         JTable transactionTable = new JTable(tableModel);
-
         JScrollPane scrollPane = new JScrollPane(transactionTable);
         scrollPane.setBorder(BorderFactory.createTitledBorder("Recent Transactions"));
-
         summaryPanel.add(scrollPane, BorderLayout.CENTER);
 
         return summaryPanel;
     }
 
+    /**
+     * Refreshes the transaction table data.
+     */
     private void refreshtable() {
         tableModel.setRowCount(0);
         List<TransactionInformation> transactions = TransactionInformation.transactionList;
@@ -243,6 +270,11 @@ public class Dashboard extends JFrame {
         }
     }
 
+    /**
+     * Creates the navigation and function buttons at the bottom of the dashboard.
+     *
+     * @return the button panel.
+     */
     private JPanel createButtonPanel() {
         JPanel buttonPanel = new JPanel(new GridLayout(2, 3, 10, 10));
 
@@ -264,20 +296,19 @@ public class Dashboard extends JFrame {
         JButton reqLocBtn = new JButton("Requirement Localization");
         reqLocBtn.addActionListener(e -> openRequirementLocalization());
 
-//        JButton aiAlertsBtn = new JButton("AI Budget Progress Alerts");
-//        aiAlertsBtn.addActionListener(e -> openAIBudgetAlerts());
-
         buttonPanel.add(entryBtn);
         buttonPanel.add(AIDialogueBtn);
         buttonPanel.add(ExportcsvBtn);
         buttonPanel.add(overspendBtn);
         buttonPanel.add(aiBudgetBtn);
         buttonPanel.add(reqLocBtn);
-//        buttonPanel.add(aiAlertsBtn);
 
         return buttonPanel;
     }
 
+    /**
+     * Prompts user before returning to the home page.
+     */
     private void openHomePage() {
         String[] options = {"Yes, Return Home", "Cancel"};
 
@@ -292,26 +323,22 @@ public class Dashboard extends JFrame {
                 options[1]
         );
 
-        if (choice == 0) { // "Yes, Return Home" 被选中
-            // 关闭所有可见的窗口（包括 Dashboard 和其他子窗口）
+        if (choice == 0) {
             closeAllWindows();
-
-            // 重新打开 HomePage
             new HomePage().setVisible(true);
         }
-        // 如果选择 "Cancel"，不做任何操作
     }
 
-
+    /**
+     * Closes all visible windows in the application.
+     */
     private void closeAllWindows() {
-        // 获取所有可见的 JFrame
         for (Frame frame : Frame.getFrames()) {
             if (frame.isVisible()) {
                 frame.dispose();
             }
         }
 
-        // 获取所有可见的 JDialog（如果有）
         Window[] windows = Window.getWindows();
         for (Window window : windows) {
             if (window.isVisible()) {
@@ -326,15 +353,18 @@ public class Dashboard extends JFrame {
 
     private ObservationFrame observationFrame;
 
+    /**
+     * Opens the AI Dialogue window.
+     */
     private void openAIDialogue() {
         SwingUtilities.invokeLater(() -> {
             if (observationFrame == null) {
-                observationFrame = new ObservationFrame(); // 传入父窗口
+                observationFrame = new ObservationFrame();
                 observationFrame.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
                 observationFrame.addWindowListener(new WindowAdapter() {
                     @Override
                     public void windowClosed(WindowEvent e) {
-                        observationFrame = null; // 窗口关闭后释放实例
+                        observationFrame = null;
                     }
                 });
             }
@@ -350,15 +380,10 @@ public class Dashboard extends JFrame {
         CombinedUIManager.showCombinedUI();
     }
 
-    //待对接同学调试完毕后完善
     private void openOverspendReminder() {
         new Thread(() -> {
             try {
                 BudgetApp.launch(BudgetApp.class);
-            } catch (IllegalStateException e) {
-                JOptionPane.showMessageDialog(null,
-                        "Budget application window is already open",
-                        "Information", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception e) {
                 JOptionPane.showMessageDialog(null,
                         "Failed to launch budget application: " + e.getMessage(),
@@ -390,10 +415,6 @@ public class Dashboard extends JFrame {
     private void openAIBudgetPlanning() {
         FullBudgetPlannerManager.showBudgetPlanner();
     }
-
-//    private void openAIBudgetAlerts() {
-//        JOptionPane.showMessageDialog(this, "Opening AI Budget Progress Alerts");
-//    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
