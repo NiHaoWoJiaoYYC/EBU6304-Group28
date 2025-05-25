@@ -1,43 +1,29 @@
 [ {
-  "id" : null,
+  "id" : 1,
   "holidayId" : 0,
   "date" : "2025-05-22",
   "category" : "Food",
   "paymentMethod" : "WX",
   "amount" : 123.0
 }, {
-  "id" : null,
+  "id" : 2,
   "holidayId" : 1,
   "date" : "2025-05-22",
   "category" : "Food",
   "paymentMethod" : "WX",
   "amount" : 1110.0
 }, {
-  "id" : null,
-  "holidayId" : 1,
-  "date" : "2025-05-23",
-  "category" : "Food",
-  "paymentMethod" : "WX",
-  "amount" : 12345.0
-}, {
-  "id" : null,
+  "id" : 4,
   "holidayId" : 3,
   "date" : "2025-05-23",
   "category" : "Food",
   "paymentMethod" : "WX",
   "amount" : 123.0
 }, {
-  "id" : null,
+  "id" : 5,
   "holidayId" : 3,
-  "date" : "2025-05-23",
-  "category" : "Food",
-  "paymentMethod" : "WX",
-  "amount" : 20.0
-}, {
-  "id" : null,
-  "holidayId" : 2,
-  "date" : "2025-05-23",
-  "category" : "Food",
-  "paymentMethod" : "WX",
-  "amount" : 120.0
+  "date" : "2025-05-25",
+  "category" : "Education",
+  "paymentMethod" : "CC",
+  "amount" : 12345.0
 } ]

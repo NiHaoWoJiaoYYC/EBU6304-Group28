@@ -1,1 +1,17 @@
-{"disposableIncome":8000.0,"budgets":{"Childcare":0.0,"Others":800.0,"Savings":351.23543969214427,"Entertainment":263.4499021754622,"Education":263.4499021754622,"Transportation":263.4499021754622,"Daily Necessities":439.02097720882625,"Healthcare":263.4499021754622,"Shopping":351.23543969214427,"Gifts":175.57107503336397,"Housing/Rent":3073.0535508363673,"Food":1756.083908835305}}
+{
+  "budgets": {
+    "Childcare": 0.0,
+    "Others": 450.0,
+    "Savings": 630.0,
+    "Entertainment": 360.0,
+    "Education": 270.0,
+    "Transportation": 450.0,
+    "Daily Necessities": 720.0,
+    "Healthcare": 450.0,
+    "Shopping": 540.0,
+    "Gifts": 180.0,
+    "Housing/Rent": 2700.0,
+    "Food": 2250.0
+  },
+  "disposableIncome": 9000.0
+}
