@@ -20,7 +20,7 @@
 
     <properties>
         <java.version>17</java.version>
-        <javafx.version>19</javafx.version>
+        <javafx.version> 17.0.15</javafx.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 

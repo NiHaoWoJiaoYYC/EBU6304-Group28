@@ -33,4 +33,11 @@
   "category" : "Food",
   "paymentMethod" : "WX",
   "amount" : 20.0
+}, {
+  "id" : null,
+  "holidayId" : 2,
+  "date" : "2025-05-23",
+  "category" : "Food",
+  "paymentMethod" : "WX",
+  "amount" : 120.0
 } ]
