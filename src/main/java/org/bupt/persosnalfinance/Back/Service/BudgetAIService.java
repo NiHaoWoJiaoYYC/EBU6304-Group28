@@ -10,11 +10,25 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+/**
+ * Service for interacting with an AI text‐generation endpoint to produce
+ * personalized budgets and budget advice based on user info and actual spending.
+ */
 public class BudgetAIService {
+
+    /** API key for authenticating with the text‐generation service. */
     public static final String API_KEY = "sk-d82ebaab7f284198a4a743e416ac184f";
+
+    /** Endpoint URL for the text‐generation service. */
     public static final String API_URL = "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation";
 
-    /** 1. 根据用户信息构造 Prompt **/
+    /**
+     * Constructs a prompt string for the AI model based on the provided user information.
+     * The prompt requests a JSON object mapping 12 budget categories to amounts.
+     *
+     * @param user the UserInfo containing occupation, income, city, dependents, etc.
+     * @return a formatted prompt to send to the AI service
+     */
     public static String buildPrompt(UserInfo user) {
         return String.format("""
             Based on the user information below, please create a monthly budget (in CNY) covering these 12 categories:
@@ -52,7 +66,14 @@ public class BudgetAIService {
         );
     }
 
-    /** 2. 调用 AI 接口，得到预算 **/
+    /**
+     * Calls the AI text‐generation API to retrieve a budget allocation.
+     * Parses the JSON response into a Map of category→amount, then adjusts
+     * totals to exactly match the user's disposable income.
+     *
+     * @param user the UserInfo used to build the prompt
+     * @return a Map from each category name to its allocated budget amount
+     */
     public static Map<String, Double> generateBudget(UserInfo user) {
         Map<String, Double> result = new HashMap<>();
         try {
@@ -89,7 +110,7 @@ public class BudgetAIService {
                         double value = Math.round(en.getValue().getAsDouble() * 10) / 10.0;
                         result.put(en.getKey(), value);
                     }
-                    // 确保总和 = 可支配收入
+                    // Ensure the sum of all values equals disposableIncome
                     double total = result.values().stream().mapToDouble(Double::doubleValue).sum();
                     double disposableIncome = user.getDisposableIncome();
                     if (total > disposableIncome) {
@@ -107,7 +128,13 @@ public class BudgetAIService {
         return result;
     }
 
-    /** 3. 读取 JSON，统计“本月”实际支出 **/
+    /**
+     * Reads a JSON file containing a list of TransactionInformation records,
+     * filters them to the current month, and sums amounts by category.
+     *
+     * @param filePath the path to the JSON file with transaction data
+     * @return a Map from category name to total spent this month
+     */
     public static Map<String, Double> getActualSpendingFromJson(String filePath) {
         Map<String, Double> spending = new HashMap<>();
         TransactionInformation.loadFromJSON(filePath);
@@ -117,7 +144,7 @@ public class BudgetAIService {
         for (TransactionInformation r : recs) {
             String date = r.getDate().replace('/', '-');
             String[] parts = date.split("-");
-            String ym = parts[0].length() == 4
+            String ym = (parts[0].length() == 4)
                     ? parts[0] + "-" + Integer.parseInt(parts[1])
                     : parts[2] + "-" + Integer.parseInt(parts[0]);
             if (!ym.equals(thisMonth)) continue;
@@ -130,7 +157,14 @@ public class BudgetAIService {
         return spending;
     }
 
-    /** 4. 根据用户信息 + 本月实际支出，让 AI 给出文字建议 **/
+    /**
+     * Builds and sends a prompt to the AI service combining user info and
+     * actual spending, then returns the AI's textual budget advice.
+     *
+     * @param user   the UserInfo with profile and income data
+     * @param actual a Map of actual spending by category this month
+     * @return a single‐paragraph suggestion string from the AI
+     */
     public static String generateSuggestion(UserInfo user, Map<String, Double> actual) {
         StringBuilder sb = new StringBuilder();
         sb.append("Based on the user information and the actual spending below, ");

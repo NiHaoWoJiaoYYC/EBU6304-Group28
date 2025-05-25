@@ -1,3 +1,17 @@
+/**
+ * Main application for AI‐powered personalized budget planning.
+ *
+ * <p>Provides a Swing UI for users to input their profile, generate monthly budgets via an AI service,
+ * visualize actual vs. AI budgets, and view or edit the saved monthly budget in a separate dialog.</p>
+ *
+ * <p>Usage:</p>
+ * <ul>
+ *   <li>Run {@link #main(String[])}</li>
+ *   <li>Input user data, click "Generate Budget" to fetch AI budgets and actual spendings</li>
+ *   <li>Visualize in table and bar chart</li>
+ *   <li>Click "Monthly Budget" to open an editable budget dialog</li>
+ * </ul>
+ */
 package org.bupt.persosnalfinance.Front.AIBudgetPlanner;
 
 import com.google.gson.Gson;
@@ -14,18 +28,31 @@ import org.jfree.data.category.DefaultCategoryDataset;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.io.*;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
 public class FullBudgetPlannerApp {
+    /** Singleton instance of the planner. */
     private static FullBudgetPlannerApp instance;
+    /** Main application frame. */
     private JFrame frame;
+    /** Text area displaying AI suggestions. */
     private JTextArea suggestionArea;
+    /** Panel where table and chart are displayed. */
     private JPanel centerPanel;
+    /** Dialog frame for the "Monthly Budget" editor. */
     private JFrame budgetFrame;
+    /** Path to the JSON file storing the current budget. */
     private static final String BUDGET_JSON = "src/main/data/current_budget.json";
 
+    /**
+     * Shows the budget planner, creating the UI if not already visible.
+     * Ensures only one instance is displayed at a time.
+     */
     public static synchronized void showBudgetPlanner() {
         if (instance == null || instance.frame == null || !instance.frame.isDisplayable()) {
             SwingUtilities.invokeLater(() -> {
@@ -37,10 +64,19 @@ public class FullBudgetPlannerApp {
         }
     }
 
+    /**
+     * Application entry point. Launches the budget planner UI.
+     *
+     * @param args command-line arguments (unused)
+     */
     public static void main(String[] args) {
         showBudgetPlanner();
     }
 
+    /**
+     * Constructs and displays the main window with user input form,
+     * a display area for table/chart, and an AI suggestion field.
+     */
     private void createAndShow() {
         frame = new JFrame("AI Personalized Budget Planning");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -60,6 +96,11 @@ public class FullBudgetPlannerApp {
         frame.setVisible(true);
     }
 
+    /**
+     * Builds the left input panel for collecting user data and buttons.
+     *
+     * @return a JPanel containing input fields and action buttons
+     */
     private JPanel createInputPanel() {
         JPanel p = new JPanel(new GridLayout(0, 2, 5, 5));
         p.setBorder(BorderFactory.createTitledBorder("User Information"));
@@ -95,12 +136,27 @@ public class FullBudgetPlannerApp {
         return p;
     }
 
+    /**
+     * Handles the "Generate Budget" action:
+     * 1) Parses inputs and constructs a UserInfo object
+     * 2) Calls AI service for budget recommendations and actual spending
+     * 3) Saves the AI budget JSON
+     * 4) Updates the main display (table + chart)
+     * 5) Retrieves AI suggestion text and shows it
+     *
+     * @param occ   occupation string
+     * @param inc   disposable income string
+     * @param city  city string
+     * @param eld   number of elderly to support string
+     * @param chi   number of children to support string
+     * @param ptn   hasPartner flag
+     * @param pts   hasPets flag
+     */
     private void onGenerate(
             String occ, String inc, String city,
             String eld, String chi,
             boolean ptn, boolean pts) {
 
-        // 1) 解析可支配收入
         double disposableIncome;
         try {
             disposableIncome = Double.parseDouble(inc);
@@ -109,7 +165,6 @@ public class FullBudgetPlannerApp {
             return;
         }
 
-        // 2) 构造 UserInfo
         UserInfo user = new UserInfo();
         user.setOccupation(occ);
         user.setDisposableIncome(disposableIncome);
@@ -119,23 +174,24 @@ public class FullBudgetPlannerApp {
         user.setHasPartner(ptn);
         user.setHasPets(pts);
 
-        // 3) AI 生成预算 + 本月实际支出
         Map<String, Double> aiMap     = BudgetAIService.generateBudget(user);
         Map<String, Double> actualMap = BudgetAIService.getActualSpendingFromJson(
                 "src/main/data/transactionInformation.json"
         );
 
-        // 4) 保存预算到 JSON
         saveBudgetToJson(disposableIncome, aiMap);
-
-        // 5) 渲染表格+图表
         displayTableAndChart(aiMap, actualMap);
 
-        // 6) 调用 AI 生成文字建议
         String advice = BudgetAIService.generateSuggestion(user, actualMap);
         suggestionArea.setText(advice);
     }
 
+    /**
+     * Persists the disposable income and AI budget map to JSON.
+     *
+     * @param income  disposableIncome value to store
+     * @param budgets map of category→budget to store
+     */
     private void saveBudgetToJson(double income, Map<String, Double> budgets) {
         try (Writer writer = new FileWriter(BUDGET_JSON)) {
             new GsonBuilder().setPrettyPrinting()
@@ -150,6 +206,12 @@ public class FullBudgetPlannerApp {
         }
     }
 
+    /**
+     * Renders the AI budget vs actual spending as a table and a bar chart.
+     *
+     * @param budgets map of category→AI budget amounts
+     * @param actuals map of category→actual spending amounts
+     */
     private void displayTableAndChart(
             Map<String, Double> budgets,
             Map<String, Double> actuals) {
@@ -179,6 +241,9 @@ public class FullBudgetPlannerApp {
         centerPanel.repaint();
     }
 
+    /**
+     * Opens or refreshes the "Monthly Budget" dialog, reloading its panel each time.
+     */
     private void openOrRefreshBudgetFrame() {
         if (budgetFrame == null) {
             budgetFrame = new JFrame("Monthly Budget");
@@ -195,6 +260,9 @@ public class FullBudgetPlannerApp {
         budgetFrame.setVisible(true);
     }
 
+    /**
+     * Callback after saving in the budget dialog: reload JSON and refresh main display.
+     */
     private void refreshMainDisplay() {
         try (Reader reader = new FileReader(BUDGET_JSON)) {
             BudgetData data = new Gson().fromJson(reader, BudgetData.class);
@@ -207,8 +275,12 @@ public class FullBudgetPlannerApp {
         }
     }
 
+    /**
+     * Internal data holder matching the saved budget JSON structure.
+     */
     private static class BudgetData {
         double disposableIncome;
         Map<String, Double> budgets;
     }
 }
+
