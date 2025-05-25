@@ -7,7 +7,7 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * CombinedUI：将 HolidayPanel 与 PlanPanel 嵌入同一窗口，实现上下联动并使用 LocalizationController。
+ * CombinedUI：Embed HolidayPanel and PlanPanel in the same window, implement up-down linkage and use LocalizationController.
  */
 public class CombinedUI extends JFrame {
     private final HolidayPanel holidayPanel;
@@ -16,10 +16,10 @@ public class CombinedUI extends JFrame {
 
     public CombinedUI() {
         super("Holiday → Spending Dashboard");
-        // 初始化 Controller
+        // Initialising the Controller
         controller = new LocalizationController();
 
-        // 初始化面板，并注入 controller
+        // Initialise the panel and inject the controller
         holidayPanel = new HolidayPanel();
         holidayPanel.setController(controller);
 
@@ -29,18 +29,18 @@ public class CombinedUI extends JFrame {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        // 垂直分割，上半是假期面板，下半是预算面板
+        // Vertical split, top half is holiday panel, bottom half is budget panel
         JSplitPane split = new JSplitPane(JSplitPane.VERTICAL_SPLIT, holidayPanel, planPanel);
         split.setResizeWeight(0.3);
         add(split, BorderLayout.CENTER);
 
-        // 注册回调：当假期选择或日期范围改变时，刷新计划面板的节假日ID
+        // Registration callback: Refresh the holiday ID of the schedule panel when the holiday selection or date range is changed
         holidayPanel.setOnDateRangeChanged((from, to) -> {
             Integer hid = holidayPanel.getSelectedHolidayId();
             planPanel.setHolidayId(hid);
         });
 
-        // 初始加载：设置默认选中假期的预算列表
+        // Initial load: set the budget list for holidays selected by default
         SwingUtilities.invokeLater(() -> {
             Integer initialId = holidayPanel.getSelectedHolidayId();
             planPanel.setHolidayId(initialId);

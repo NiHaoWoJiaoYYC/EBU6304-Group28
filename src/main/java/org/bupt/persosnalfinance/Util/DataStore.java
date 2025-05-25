@@ -13,14 +13,14 @@ import java.nio.file.Paths;
 import java.util.List;
 
 /**
- * 通用数据存储工具：将持久化文件保存在项目的 src/main/data 目录下
+ * Generic data storage tool: save persistent files in the src/main/data directory of the project
  */
 public class DataStore {
     private static final ObjectMapper M = new ObjectMapper()
-        // 注册 Java 8 时间模块，支持 LocalDate 序列化
+        // Registering the Java 8 Time module to support LocalDate serialisation
         .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule())
         .disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    // 存储根目录：项目根/src/main/data
+    // Storage root directory: project root/src/main/data
     private static final Path BASE = Paths.get(System.getProperty("user.dir"), "src", "main", "data");
     private static final String HOLIDAY_FILE = "holidays.json";
     private static final String PLAN_FILE    = "plans.json";

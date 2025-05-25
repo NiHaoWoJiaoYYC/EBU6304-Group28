@@ -18,8 +18,8 @@ import java.util.*;
 import java.util.List;
 
 /**
- * PlanPanel 支持按 Holiday ID 分组显示和添加预算记录，切换 Holiday 时具有记忆性。
- * 使用 LocalizationController 统一调度业务逻辑。
+ * PlanPanel supports displaying and adding budget records grouped by Holiday ID, with memory when switching between Holidays.
+ * Use LocalizationController to unify the scheduling of business logic.
  */
 public class PlanPanel extends JPanel {
     private LocalizationController controller;
@@ -30,7 +30,7 @@ public class PlanPanel extends JPanel {
     private JLabel totalLabel;
     private DefaultPieDataset dataset = new DefaultPieDataset();
 
-    // 添加记录的输入组件
+    // Input components for adding records
     private final JSpinner dateSpinner;
     private final JComboBox<String> categoryCombo;
     private final JComboBox<String> paymentCombo;
@@ -42,7 +42,7 @@ public class PlanPanel extends JPanel {
         super(new BorderLayout(5,5));
         setBorder(BorderFactory.createTitledBorder("Spending Plan"));
 
-        // 顶部：输入区域
+        // Top: Input area
         JPanel top = new JPanel(new FlowLayout(FlowLayout.LEFT, 8, 8));
         dateSpinner = new JSpinner(new SpinnerDateModel(new Date(), null, null, Calendar.DAY_OF_MONTH));
         dateSpinner.setEditor(new JSpinner.DateEditor(dateSpinner, "yyyy-MM-dd"));
@@ -72,11 +72,11 @@ public class PlanPanel extends JPanel {
 
         add(top, BorderLayout.NORTH);
 
-        // 中部：表格
-    // 把原来只有 Date/Category/Payment/Amount 的列，改为第一列专门存放 ID
+        // Centre: Table
+    // Instead of only Date/Category/Payment/Amount columns, the first column is dedicated to IDs.
     model = new DefaultTableModel(new String[]{"ID", "Date", "Category", "Payment", "Amount"}, 0);
     table = new JTable(model);
-    // 隐藏 ID 列
+    // Hide ID Column
     table.getColumnModel().getColumn(0).setMinWidth(0);
     table.getColumnModel().getColumn(0).setMaxWidth(0);
 JScrollPane tableScroll = new JScrollPane(table);
@@ -87,34 +87,34 @@ JScrollPane tableScroll = new JScrollPane(table);
         leftPanel.add(tableScroll, BorderLayout.CENTER);
         leftPanel.add(totalLabel, BorderLayout.SOUTH);
 
-        // 饼图
+        // pie chart
         ChartPanel chartPanel = new ChartPanel(createPieChart());
-        // 调整饼图面板首选尺寸，防止过大
+        // Adjust the preferred size of the pie chart panel to prevent it from being too large
         chartPanel.setPreferredSize(new Dimension(300, 250));
 
-        // 水平拆分：左侧表格+Total，右侧饼图
+        // Split horizontally: table + Total on the left, pie chart on the right
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, leftPanel, chartPanel);
-        // 这里可以用比例或具体像素定位分割线
-        splitPane.setResizeWeight(0.6);      // 左侧占 60%
+        // Here you can position the segmentation line using proportions or specific pixels
+        splitPane.setResizeWeight(0.6);      // 60 per cent on the left side
         splitPane.setOneTouchExpandable(true);
 
         add(splitPane, BorderLayout.CENTER); 
         
-        // 第一次加载数据
+        // Loading data for the first time
         refresh();
     }
 
 
     /**
-     * 注入 Controller，并触发第一次刷新（需在 CombinedUI 中调用）
+     * Injects the Controller and triggers the first refresh (needs to be called in CombinedUI)
      */
     public void setController(LocalizationController controller) {
         this.controller = controller;
-        // initial display—CombinedUI 应该在节假日选择后调用 setHolidayId(...)
+        // initial display-CombinedUI should call setHolidayId(...) after the holiday has been selected.
     }
 
     /**
-     * 设置当前节假日ID并刷新显示（CombinedUI 切换假期时调用）
+     * Set the current holiday ID and refresh the display (called when CombinedUI switches holidays)
      */
     public void setHolidayId(Integer holidayId) {
         this.currentHolidayId = holidayId;
@@ -122,7 +122,7 @@ JScrollPane tableScroll = new JScrollPane(table);
     }
 
     /**
-     * 添加记录：关联 currentHolidayId
+     * Add record: associate currentHolidayId
      */
     private void onAdd() {
         if (controller == null || currentHolidayId == null) {
@@ -147,7 +147,7 @@ JScrollPane tableScroll = new JScrollPane(table);
     }
 
     /**
-     * 删除选中行记录
+     * Delete selected rows
      */
     private void onDelete() {
         if (controller == null || currentHolidayId == null) {
@@ -164,18 +164,18 @@ JScrollPane tableScroll = new JScrollPane(table);
         return;
     }
 
-    // 调用 controller.removePlan(id) 删除
+    // Call controller.removePlan(id) to remove the
     for (int i = rows.length - 1; i >= 0; i--) {
-        // 第 0 列即为 ID
+        // Column 0 is the ID
         Integer id = (Integer) model.getValueAt(rows[i], 0);
         controller.removePlan(id);
     }
-    // 删除后重新刷新：表格、饼图、totalLabel 都会一起更新
+    // Refresh after deletion: tables, pie charts, totalLabel all update together!
     refresh();
     }
 
     /**
-     * 刷新表格与饼图
+     * Refresh Tables and Pie Charts
      */
     private void refresh() {
     model.setRowCount(0);
@@ -185,7 +185,7 @@ JScrollPane tableScroll = new JScrollPane(table);
     if (controller != null && currentHolidayId != null) {
         List<PlanDTO> plans = controller.getPlansForHoliday(currentHolidayId);
         for (PlanDTO p : plans) {
-            // 第 0 列存放 ID，保证后面删除能准确找到记录
+            // Column 0 holds the ID to ensure that later deletions can find the exact record.
             model.addRow(new Object[]{
                 p.getId(),
                 p.getDate(),
@@ -198,11 +198,11 @@ JScrollPane tableScroll = new JScrollPane(table);
         }
     }
 
-    // 更新总计显示（这里用本地货币格式，也可以自定义格式）
+    // Update the totals display (local currency format is used here, or you can customise the format)
     NumberFormat fmt = NumberFormat.getCurrencyInstance();
     totalLabel.setText("Total: " + fmt.format(total));
 
-    // 下面是更新饼图的原有逻辑，不需改动
+    // Here's the original logic for updating the pie chart without changes
     dataset.clear();
     if (sums.isEmpty()) {
         dataset.setValue("No Data", 1.0);
@@ -213,7 +213,7 @@ JScrollPane tableScroll = new JScrollPane(table);
     
 
     /**
-     * 清空输入控件
+     * Clear Input Controls
      */
     private void clearInputs() {
         dateSpinner.setValue(new Date());
@@ -223,15 +223,15 @@ JScrollPane tableScroll = new JScrollPane(table);
     }
 
     /**
-     * 新增：根据 dataset 构建并返回一个 JFreeChart 饼图
+     * New: Build and return a JFreeChart pie chart based on dataset.
      */
     private JFreeChart createPieChart() {
         JFreeChart chart = ChartFactory.createPieChart(
-            "Spending by Category",  // 标题
-            dataset,                // 数据集
-            true,                   // 是否显示图例
-            true,                   // 是否生成工具提示
-            false                   // 是否生成 URLs
+            "Spending by Category",  // caption
+            dataset,                // data set
+            true,                   // Whether to display the legend
+            true,                   // Whether to generate tooltips
+            false                   // Whether to generate URLs
         );
         PiePlot plot = (PiePlot) chart.getPlot();
         plot.setSectionOutlinesVisible(false);

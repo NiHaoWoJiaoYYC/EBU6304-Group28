@@ -8,17 +8,17 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
- * 支出记录业务服务：提供数据管理接口，持久化到 JSON 文件，实现记忆性
+ * Expenditure recording business service: provide data management interface, persist to JSON file, achieve memorability
  */
 public class PlanService {
-    // 内存缓存，启动时从持久化加载
+    // In-memory cache, loaded from persistence at startup
     private List<PlanDTO> records;
 
     public PlanService() {
-        // 从 DataStore 读取之前保存的记录
+        // Reading previously saved records from the DataStore
         this.records = new ArrayList<>(DataStore.loadPlans());
 
-        // 为历史遗留的无 ID 记录分配唯一 ID
+        // Assigning unique IDs to legacy ID-less records
         int maxId = records.stream()
                            .filter(p -> p.getId() != null)
                            .mapToInt(PlanDTO::getId)
@@ -29,15 +29,15 @@ public class PlanService {
                 p.setId(++maxId);
             }
         }
-        // 立即持久化一次，保证 plans.json 中都有合法 ID
+        // Immediate persistence is done once, ensuring that the plans.json has all the legal IDs.
         DataStore.savePlans(records);
     }
 
     /**
-     * 新增记录并持久化，新增时给 DTO 分配不重复的 ID
+     * Add a new record and persist it, assign non-repeating IDs to DTOs when adding new records
      */
     public void addRecord(PlanDTO dto) {
-        // 计算一个比当前所有 ID 最大值都大的新 ID
+        // Calculate a new ID that is larger than the maximum of all current IDs
         int newId = records.stream()
                            .mapToInt(p -> p.getId() != null ? p.getId() : 0)
                            .max()
@@ -48,7 +48,7 @@ public class PlanService {
     }
 
     /**
-     * 根据记录 ID 删除并持久化
+     * Delete and persist by record ID
      */
     public void removeRecord(int planId) {
         records.removeIf(p -> planId == p.getId());
@@ -56,14 +56,14 @@ public class PlanService {
     }
 
     /**
-     * 获取所有记录的副本
+     * Get a copy of all records
      */
     public List<PlanDTO> getAllRecords() {
         return new ArrayList<>(records);
     }
 
     /**
-     * 按假期 ID 过滤并返回记录列表
+     * Filter by holiday ID and return a list of records
      */
     public List<PlanDTO> getAllRecordsForHoliday(Integer holidayId) {
         return getAllRecords().stream()
