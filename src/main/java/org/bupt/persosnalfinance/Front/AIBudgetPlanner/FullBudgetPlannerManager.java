@@ -1,6 +1,9 @@
 /**
  * Manager class to decouple UI launch logic from the application entry point.
  * Provides a simple facade for showing the Full Budget Planner UI.
+ *
+ * @author Xuerui Dong
+ *
  */
 package org.bupt.persosnalfinance.Front.AIBudgetPlanner;
 
