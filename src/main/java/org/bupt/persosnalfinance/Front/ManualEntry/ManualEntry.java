@@ -6,11 +6,23 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-
 import org.bupt.persosnalfinance.dto.TransactionInformation;
 
+/**
+ * The ManualEntry class provides a graphical user interface (GUI)
+ * for users to manually enter transaction information.
+ * Users can input transaction date, amount, type, object, and remarks,
+ * and then save the information to a JSON file.
+ *
+ * @author Jing Wenrui
+ */
+
 public class ManualEntry {
+    /**
+     * The main method launches the manual entry window.
+     */
     public static void main(String[] args) {
+        // Load existing transaction data
         TransactionInformation.loadFromJSON("src/main/data/transactionInformation.json");
 
         JFrame frame = new JFrame("Transaction information > Manual Entry");
@@ -22,6 +34,7 @@ public class ManualEntry {
         gbc.insets = new Insets(5, 20, 5, 20);
         gbc.anchor = GridBagConstraints.WEST;
 
+        // Transaction date input
         JLabel transactionDate = new JLabel("Transaction date:");
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -33,6 +46,7 @@ public class ManualEntry {
         gbc.fill = GridBagConstraints.HORIZONTAL;
         panel.add(dateField, gbc);
 
+        // Transaction amount input
         JLabel transactionAmount = new JLabel("Transaction amount :");
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -43,6 +57,7 @@ public class ManualEntry {
         gbc.gridy = 1;
         panel.add(amountField, gbc);
 
+        // Transaction type dropdown
         JLabel typeLabel = new JLabel("Transaction type :");
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -58,6 +73,7 @@ public class ManualEntry {
         gbc.gridy = 2;
         panel.add(typeComboBox, gbc);
 
+        // Transaction object input
         JLabel objectLabel = new JLabel("Transaction object :");
         gbc.gridx = 0;
         gbc.gridy = 3;
@@ -68,6 +84,7 @@ public class ManualEntry {
         gbc.gridy = 3;
         panel.add(objectField, gbc);
 
+        // Transaction object input
         JLabel remarkLabel = new JLabel("Remark :");
         gbc.gridx = 0;
         gbc.gridy = 4;
@@ -79,6 +96,7 @@ public class ManualEntry {
         gbc.gridy = 4;
         panel.add(scrollPane, gbc);
 
+        // Buttons
         JPanel buttonPanel = new JPanel();
         JButton cancelButton = new JButton("cancel");
         JButton saveButton = new JButton("save");
@@ -92,6 +110,7 @@ public class ManualEntry {
         gbc.gridwidth = 2;
         panel.add(buttonPanel, gbc);
 
+        // Save button action: validate input and store transaction
         saveButton.addActionListener(e -> {
             try {
                 // date validation
@@ -129,10 +148,14 @@ public class ManualEntry {
                 JOptionPane.showMessageDialog(frame, "Invalid amount. Please enter a non-negative number.", "Amount Error", JOptionPane.ERROR_MESSAGE);
             }
         });
+
+        // Cancel button action: close window
         cancelButton.addActionListener(e -> frame.dispose());
+
+        // View button action: open view window
         viewButton.addActionListener(e -> new DisplayTransactionInformation());
 
-        // FocusListeners 
+        // Focus listeners: placeholder behavior
         dateField.addFocusListener(new FocusAdapter() {
             public void focusGained(FocusEvent e) {
                 if (dateField.getText().equals("yyyy/MM/dd")) dateField.setText("");
