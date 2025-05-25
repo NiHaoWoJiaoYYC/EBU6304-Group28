@@ -102,8 +102,9 @@ Page UI Overview:
    - DTO (dto)
    - UI (Front.AIBudgetPlanner)
 Used Gson for JSON I/O and Swing for responsive desktop views
+--
 
-**Name:**Fang Xin
+**Name:** Fang Xin 
 **QMUL ID:**  221167700
 
 ### 📌 Main Contributions
