@@ -21,42 +21,42 @@ public class LocalizationController {
         this.holidayService = new HolidayService(restTemplate, HOLIDAY_API_URL_TEMPLATE);
     }
 
-    /** 获取所有假期（每条都有 ID） */
+    /** Get all holidays (each with an ID) */
     public List<HolidayDTO> getAllHolidays() {
         return holidayService.getAllHolidays();
     }
 
-    /** 添加自定义假期（名称），自动分配 ID */
+    /** Add a custom holiday (name) with automatic ID assignment */
     public void addCustomHoliday(String name) {
         holidayService.addCustomHoliday(name);
     }
 
-    /** 修改节假日名称（API 或自定义都支持），即时生效 */
+    /** Modify the name of the holiday (API or customisation is supported) for immediate effect.*/
     public void updateHolidayName(HolidayDTO dto, String newName) {
         holidayService.updateHolidayName(dto, newName);
     }
 
-    /** 删除一条假期（API 或自定义都支持） */
+    /** Delete a holiday (supported by API or customisation)*/
     public void removeHoliday(HolidayDTO dto) {
         holidayService.removeHoliday(dto);
     }
 
-    /** 修改节假日日期区间（API 或自定义都支持），即时生效 */
+    /** Modify the holiday date range (API or customisable) for immediate effect. */
     public void updateHolidayDates(HolidayDTO dto, LocalDate start, LocalDate end) {
         holidayService.updateHolidayDates(dto, start, end);
     }
 
-    /** 为某个假期添加预算 */
+    /** Adding a budget for a particular holiday */
     public void addPlan(Integer holidayId, LocalDate date, String category, String payment, double amt) {
         planService.addRecord(new PlanDTO(holidayId, date, category, payment, amt));
     }
 
-    /** 获取指定假期的所有预算记录 */
+    /** Get all budget records for a given holiday */
     public List<PlanDTO> getPlansForHoliday(Integer holidayId) {
         return planService.getAllRecordsForHoliday(holidayId);
     }
 
-    /** 删除单条预算记录 */
+    /** Deletion of individual budget records*/
     public void removePlan(int planId) {
         planService.removeRecord(planId);
     }

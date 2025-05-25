@@ -4,13 +4,13 @@ import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
- * 支出记录数据传输对象，增加了对 Holiday 的关联支持
+ * Expenditure record data transfer object with added support for Holiday association
  */
 public class PlanDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private Integer id;            // 主键
-    private Integer holidayId;     // 关联的节假日 ID
+    private Integer id;            // primary key
+    private Integer holidayId;     // Associated Holiday ID
     private LocalDate date;
     private String category;
     private String paymentMethod;
@@ -18,7 +18,7 @@ public class PlanDTO implements Serializable {
 
     public PlanDTO() {}
 
-    /** 不关联节假日时可使用此构造器 */
+    /** This constructor can be used when there is no holiday associated with it. */
     public PlanDTO(LocalDate date, String category, String paymentMethod, double amount) {
         this.date = date;
         this.category = category;
@@ -26,7 +26,7 @@ public class PlanDTO implements Serializable {
         this.amount = amount;
     }
 
-    /** 完整构造器，包含节假日关联 */
+    /** Full constructor with holiday associations */
     public PlanDTO(Integer holidayId, LocalDate date, String category, String paymentMethod, double amount) {
         this.holidayId = holidayId;
         this.date = date;

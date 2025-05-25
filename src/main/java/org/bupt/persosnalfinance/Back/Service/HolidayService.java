@@ -26,7 +26,7 @@ public class HolidayService {
         this.userHolidays     = new ArrayList<>();
         this.idGenerator      = new AtomicInteger();
 
-        // 1) 先加载自定义假期，并初始化 ID 生成器
+        // 1) Load the custom holiday first and initialise the ID generator
         List<HolidayDTO> persisted = DataStore.loadHolidays();
         userHolidays.addAll(persisted);
         int maxId = userHolidays.stream()
@@ -36,13 +36,13 @@ public class HolidayService {
                        .orElse(0);
         idGenerator.set(maxId + 1);
 
-        // 2) 拉取并合并 API 假期，赋予 ID
+        // 2) Pull and merge API holidays, assign IDs
         loadAndMergeApiHolidays();
     }
 
     /**
-     * 拉取前后一个月的节假日，过滤到 [today-1month, today+1month] 之内，
-     * 合并同名区间，并赋予唯一 ID。
+     * Pull the holidays of the month before and after, filter them to [today-1month, today+1month].
+     * Merge intervals with the same name and assign unique IDs.
      */
     private void loadAndMergeApiHolidays() {
         apiHolidays.clear();
@@ -50,10 +50,10 @@ public class HolidayService {
         LocalDate startRange = today.minusMonths(1);
         LocalDate endRange   = today.plusMonths(1);
 
-        // 临时：name -> list of dates
+        // at the instant sth happens：name -> list of dates
         Map<String, List<LocalDate>> holidayDates = new HashMap<>();
 
-        // 只需拉取前一个月和后一个月
+        // Just pull the month before and the month after
         for (int offset = -1; offset <= 1; offset++) {
             LocalDate month = today.plusMonths(offset);
             String url = String.format(monthUrlTemplate,
@@ -64,26 +64,26 @@ public class HolidayService {
                 JsonNode root = objectMapper.readTree(json).path("holiday");
                 for (Iterator<Map.Entry<String, JsonNode>> it = root.fields(); it.hasNext(); ) {
                     Map.Entry<String, JsonNode> entry = it.next();
-                    // 解析日期
+                    // analysis period
                     String key = entry.getKey(); // "yyyy-MM-dd"
                     LocalDate date = key.matches("\\d{4}-\\d{2}-\\d{2}")
                                      ? LocalDate.parse(key)
                                      : LocalDate.parse(month.getYear() + "-" + key);
-                    // 过滤范围外日期
+                    // Out-of-filter date
                     if (date.isBefore(startRange) || date.isAfter(endRange)) {
                         continue;
                     }
-                    // 过滤“补班” (holiday=false)
+                    // Filtering of "remedial classes"(holiday=false)
                     JsonNode node = entry.getValue();
                     if (node.isObject() && node.has("holiday") && !node.get("holiday").asBoolean()) {
                         continue;
                     }
-                    // 解析名称
+                    // Parse name
                     String name = node.isTextual() ? node.asText()
                                   : node.has("name") ? node.get("name").asText()
                                   : "";
                     if (name.isBlank()) continue;
-                    // 收集
+                    // collects
                     holidayDates.computeIfAbsent(name, k -> new ArrayList<>()).add(date);
                 }
             } catch (Exception ex) {
@@ -91,7 +91,7 @@ public class HolidayService {
             }
         }
 
-        // 合并同名，赋予 ID
+        // Merge with same name, give ID
         for (Map.Entry<String, List<LocalDate>> e : holidayDates.entrySet()) {
             List<LocalDate> dates = e.getValue();
             dates.sort(Comparator.naturalOrder());
@@ -102,11 +102,11 @@ public class HolidayService {
             apiHolidays.add(dto);
         }
 
-        // 按开始日期升序
+        // Ascending order by start date
         apiHolidays.sort(Comparator.comparing(HolidayDTO::getStartDate));
     }
 
-    /** 返回所有假期：API + 自定义（每条假期均有 ID） */
+    /** Returns all holidays: API + customisation (each holiday has an ID) */
     public List<HolidayDTO> getAllHolidays() {
         List<HolidayDTO> all = new ArrayList<>(apiHolidays);
         all.addAll(userHolidays);
@@ -114,7 +114,7 @@ public class HolidayService {
     }
     
     /**
- * 添加一个自定义假期（只设当天为开始和结束），并持久化
+ * Add a custom holiday (with only the day as the start and end) and persist it
  */
 public void addCustomHoliday(String name) {
     LocalDate today = LocalDate.now();
@@ -125,32 +125,33 @@ public void addCustomHoliday(String name) {
 }
 
 /**
- * 更新假期的日期区间（API 假期或自定义都可）
+ * Update the date range of the holiday (either API Holiday or Custom can be used)
  */
 public void updateHolidayDates(HolidayDTO dto, LocalDate start, LocalDate end) {
     if (dto == null) return;
     dto.setStartDate(start);
     dto.setEndDate(end);
-    // 如果是自定义假期，做持久化保存
+    // If it's a custom holiday, do a persistent save
+
     if (userHolidays.stream().anyMatch(h -> Objects.equals(h.getId(), dto.getId()))) {
         DataStore.saveHolidays(userHolidays);
     }
 }
 
 /**
- * 更新假期名称（API 假期或自定义都可）
+ * Update the holiday name (either API Holiday or Custom can be used)
  */
 public void updateHolidayName(HolidayDTO dto, String newName) {
     if (dto == null || newName == null || newName.isBlank()) return;
     dto.setName(newName);
-    // 如果是自定义假期，做持久化保存
+    // If it's a custom holiday, do persistence saving
     if (userHolidays.stream().anyMatch(h -> Objects.equals(h.getId(), dto.getId()))) {
         DataStore.saveHolidays(userHolidays);
     }
 }
 
 /**
- * 删除假期（API 假期只在内存移除，自定义假期同时持久化）
+ * Remove holidays (API holidays are only removed in memory, custom holidays are persisted at the same time)
  */
 public void removeHoliday(HolidayDTO dto) {
     if (dto == null) return;
