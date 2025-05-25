@@ -1,5 +1,15 @@
 package org.bupt.persosnalfinance.Back.Response;
-
+/**
+ * Response object for returning budget data to the frontend.
+ *
+ * Fields:
+ * - categories: Array of budget categories.
+ * - lastQuarterAvg: Spending data for the last quarter.
+ * - thisQuarter: Spending data for the current quarter.
+ *
+ * Purpose:
+ * - Supplies data to be used in visual charts and tables in the frontend application.
+ */
 public class BudgetDataResponse {
     private String[] categories;
     private double[] lastQuarterAvg;

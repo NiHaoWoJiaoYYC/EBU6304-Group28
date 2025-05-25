@@ -15,6 +15,17 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
+/**
+ * BudgetApp is a JavaFX-based desktop application for tracking and comparing budget data
+ * between the last quarter and the current quarter.
+ *
+ * Features:
+ * - Displays a bar chart for visualizing category-wise spending comparisons.
+ * - Highlights overspending alerts based on a user-adjustable threshold.
+ * - Presents detailed data in a TableView with dynamic status updates.
+ *
+ * Data is fetched from a backend API and rendered interactively with charts, tables, and alerts.
+ */
 
 public class BudgetApp extends Application {
     private static final String API_BASE = "http://localhost:8080/api/budget";
