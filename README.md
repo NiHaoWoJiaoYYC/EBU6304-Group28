@@ -13,7 +13,7 @@
   - **LLM Dialog Interface** — Enable intelligent Q&A via integrated Large Language Model (LLM).
     - **Frontend:** Implemented via `ObservationFrame.java`
     - **Backend:** Handled using `Transaction... .java` (For Record visualization)and `Chat... .java`(For LLM chat)
-- 🏗️ Created and initialized the project repository structure for team collaboration.
+- 🏗️ Created and initialized the project repository structure for team collaboration & readme.md.
 
 
 **Name:** Jing Wenrui  
