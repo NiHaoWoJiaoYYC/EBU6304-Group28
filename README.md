@@ -102,6 +102,13 @@ Page UI Overview:
    - DTO (dto)
    - UI (Front.AIBudgetPlanner)
 Used Gson for JSON I/O and Swing for responsive desktop views
+
+**Name:**Fang Xin
+**QMUL ID:**  221167700
+
+### 📌 Main Contributions
+
+- I was responsible for the overall technical architecture and core feature implementation of the project. The backend was developed using Spring Boot with a layered architecture (Controller–Service–DTO–Response) to ensure modularity and clear logic separation. I designed and implemented the /api/budget/check endpoint to compare quarterly spending across 12 categories and detect overspending based on a dynamic threshold. The data layer supports CSV import and includes category mapping and data transformation. On the frontend, I used JavaFX to implement bar charts and tables, with a slider component linked to the backend to dynamically adjust alert thresholds in real time. In addition, I developed integration tests using MockMvc to validate the full request-response process and ensure system stability.
 ---
 
 ## 💻 Execution 
