@@ -8,7 +8,17 @@ public class BudgetResponse {
     private double[] lastQuarterAvg;
     private double[] thisQuarter;
 
-    // Getter 和 Setter 方法
+    /**
+     * Response object for returning the results of the overspending check.
+     *
+     * Fields:
+     * - alerts: A list of textual alerts for categories where overspending was detected.
+     * - lastQuarterAvg: Original data sent back for possible reuse.
+     * - thisQuarter: Current data sent back for possible reuse.
+     *
+     * Purpose:
+     * - Communicates alert messages to the frontend when spending exceeds the set threshold.
+     */
     public List<String> getAlerts() {
         return alerts;
     }

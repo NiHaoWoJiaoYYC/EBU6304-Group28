@@ -10,6 +10,16 @@ import org.bupt.persosnalfinance.dto.User;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+/**
+ * REST controller for budget-related endpoints.
+ *
+ * Endpoints:
+ * - GET /api/budget/data: Returns category labels and spending data for both quarters.
+ * - POST /api/budget/check: Accepts user spending data and a threshold, and returns overspending alerts.
+ *
+ * Services:
+ * - Uses BudgetService for business logic and Converter2 for reading and converting JSON data.
+ */
 
 @RestController
 @RequestMapping("/api/budget")
