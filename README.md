@@ -13,7 +13,7 @@
   - **LLM Dialog Interface** — Enable intelligent Q&A via integrated Large Language Model (LLM).
     - **Frontend:** Implemented via `ObservationFrame.java`
     - **Backend:** Handled using `Transaction... .java` (For Record visualization)and `Chat... .java`(For LLM chat)
-- 🏗️ Created and initialized the project repository structure for team collaboration.
+- 🏗️ Created and initialized the project repository structure for team collaboration & readme.md.
 
 
 **Name:** Jing Wenrui  
@@ -102,8 +102,9 @@ Page UI Overview:
    - DTO (dto)
    - UI (Front.AIBudgetPlanner)
 Used Gson for JSON I/O and Swing for responsive desktop views
+--
 
-**Name:**Fang Xin
+**Name:** Fang Xin 
 **QMUL ID:**  221167700
 
 ### 📌 Main Contributions
