@@ -8,11 +8,23 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import org.bupt.persosnalfinance.dto.TransactionInformation;
 
+/**
+ * Displays all stored transaction information in a table.
+ * Allows the user to edit or delete existing transactions,
+ * or return to the manual entry interface.
+ *
+ * @author Jing Wenrui
+ */
+
 public class DisplayTransactionInformation {
     private JFrame frame;
     private JTable table;
     private DefaultTableModel tableModel;
 
+    /**
+     * Constructor that initializes and displays the transaction table UI.
+     * It loads transactions from a JSON file and populates the table.
+     */
     public DisplayTransactionInformation() {
         TransactionInformation.loadFromJSON("src/main/data/transactionInformation.json");
 
@@ -51,6 +63,9 @@ public class DisplayTransactionInformation {
         frame.setVisible(true);
     }
 
+    /**
+     * Refreshes the table contents by reloading and sorting the transaction list.
+     */
     private void refreshTable() {
         tableModel.setRowCount(0);
         List<TransactionInformation> transactions = TransactionInformation.transactionList;
@@ -71,7 +86,10 @@ public class DisplayTransactionInformation {
         }
     }
 
-
+    /**
+     * Opens a dialog to edit the currently selected transaction.
+     * Validates user input and updates the data if confirmed.
+     */
     private void editSelectedTransaction() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
@@ -137,6 +155,9 @@ public class DisplayTransactionInformation {
         }
     }
 
+    /**
+     * Deletes the currently selected transaction after confirmation.
+     */
     private void deleteSelectedTransaction() {
         int selectedRow = table.getSelectedRow();
         if (selectedRow == -1) {
@@ -152,6 +173,12 @@ public class DisplayTransactionInformation {
         }
     }
 
+    /**
+     * Checks whether a given date string is valid based on the yyyy/MM/dd format.
+     *
+     * @param date the date string to validate
+     * @return true if the date is valid; false otherwise
+     */
     private boolean isValidDate(String date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         sdf.setLenient(false);
