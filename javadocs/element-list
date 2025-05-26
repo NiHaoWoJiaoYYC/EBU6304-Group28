@@ -1,0 +1,16 @@
+org.bupt.persosnalfinance
+org.bupt.persosnalfinance.Back.Controller
+org.bupt.persosnalfinance.Back.Response
+org.bupt.persosnalfinance.Back.Service
+org.bupt.persosnalfinance.Back.Service.ServiceImpl
+org.bupt.persosnalfinance.dto
+org.bupt.persosnalfinance.Front.AIBudgetPlanner
+org.bupt.persosnalfinance.Front.AlertFront
+org.bupt.persosnalfinance.Front.Dashboard
+org.bupt.persosnalfinance.Front.ExportCsvPanel
+org.bupt.persosnalfinance.Front.HomePage
+org.bupt.persosnalfinance.Front.importcsv
+org.bupt.persosnalfinance.Front.Localization
+org.bupt.persosnalfinance.Front.ManualEntry
+org.bupt.persosnalfinance.Front.visualization
+org.bupt.persosnalfinance.Util
